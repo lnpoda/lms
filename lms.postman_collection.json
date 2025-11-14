@@ -1,0 +1,110 @@
+{
+	"info": {
+		"_postman_id": "2a802c09-4ee7-419c-800f-745d6c1108e8",
+		"name": "lms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42134690"
+	},
+	"item": [
+		{
+			"name": "customer",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"testcustomer3\",\r\n    \"email\": \"testmail3@email.com\",\r\n    \"mobileNumber\": \"999999997\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hostUrl}}/{{CustomerPattern}}/create?name=testcustomer3&email=testmail3@email.com&mobileNumber=999999997",
+							"host": [
+								"{{hostUrl}}"
+							],
+							"path": [
+								"{{CustomerPattern}}",
+								"create"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "testcustomer3"
+								},
+								{
+									"key": "email",
+									"value": "testmail3@email.com"
+								},
+								{
+									"key": "mobileNumber",
+									"value": "999999997"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hostUrl}}/{{CustomerPattern}}/get?mobileNumber=999999997",
+							"host": [
+								"{{hostUrl}}"
+							],
+							"path": [
+								"{{CustomerPattern}}",
+								"get"
+							],
+							"query": [
+								{
+									"key": "mobileNumber",
+									"value": "999999997"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{hostUrl}}/{{CustomerPattern}}/list",
+							"host": [
+								"{{hostUrl}}"
+							],
+							"path": [
+								"{{CustomerPattern}}",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
