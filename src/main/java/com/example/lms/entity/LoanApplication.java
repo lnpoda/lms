@@ -20,9 +20,6 @@ public class LoanApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private Customer customer;
-
     @Column
     private BigDecimal amount;
 
@@ -50,4 +47,13 @@ public class LoanApplication {
 
     @Column
     private LocalDateTime updatedAt;
+
+    @OneToOne
+    private Customer customer;
+
+    @OneToOne
+    private Loan loan;
+
+    @OneToOne
+    private RepaymentSchedule repaymentSchedule;
 }

@@ -15,8 +15,6 @@ public class LoanApplicationResponseDto {
 
     private BigDecimal amount;
 
-    private CustomerDto customerDto;
-
     private LoanStatus loanStatus;
 
     private String reviewedBy;

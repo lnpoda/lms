@@ -21,5 +21,5 @@ public class LoanApplicationRequestDto {
 
     private BigDecimal customerAnnualIncome;
 
-    private Long customerId;
+    private CustomerDto customerDto;
 }
