@@ -1,5 +1,6 @@
 package com.example.lms.entity;
 
+import com.example.lms.constants.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,8 @@ public class Loan {
     private String type;
 
     @Column
-    private String status;
+    private PaymentStatus paymentStatus;
+
+    @OneToOne
+    private LoanApplication loanApplication;
 }
