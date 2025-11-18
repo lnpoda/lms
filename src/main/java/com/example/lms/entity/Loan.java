@@ -1,11 +1,13 @@
 package com.example.lms.entity;
 
-import com.example.lms.constants.PaymentStatus;
+import com.example.lms.constants.LoanPaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,18 +19,22 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long customerId;
 
     @Column
-    private Long amount;
+    private BigDecimal amount;
 
     @Column
     private String type;
 
     @Column
-    private PaymentStatus paymentStatus;
+    private LoanPaymentStatus loanPaymentStatus;
+
+    @OneToOne
+    private Customer customer;
 
     @OneToOne
     private LoanApplication loanApplication;
+
+    @OneToOne
+    private RepaymentSchedule repaymentSchedule;
 }

@@ -1,12 +1,14 @@
 package com.example.lms.entity;
 
-import com.example.lms.constants.LoanStatus;
+import com.example.lms.constants.LoanApplicationStatus;
+import com.example.lms.constants.LoanPaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -20,14 +22,14 @@ public class RepaymentSchedule {
     private Long id;
 
     @Column
-    private Long loanId;
-
-    @Column
     private Date dueDate;
 
     @Column
-    private Long principal;
+    private BigDecimal principal;
 
     @Column
-    private LoanStatus status;
+    private LoanPaymentStatus loanPaymentStatus;
+
+    @OneToOne
+    private Loan loan;
 }

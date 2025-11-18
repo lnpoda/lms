@@ -1,10 +1,12 @@
 package com.example.lms.mapper;
 
-import com.example.lms.dto.*;
+import com.example.lms.dto.CustomerDto;
+import com.example.lms.dto.LoanApplicationRequestDto;
+import com.example.lms.dto.LoanApplicationResponseDto;
+import com.example.lms.dto.LoanDto;
 import com.example.lms.entity.Customer;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
-import com.example.lms.entity.RepaymentSchedule;
 
 public class LoanApplicationMapper {
     public LoanApplication dtoToEntity(LoanApplicationRequestDto dto, LoanApplication entity) {
@@ -22,10 +24,8 @@ public class LoanApplicationMapper {
     public LoanApplicationResponseDto entityToDto(LoanApplication entity, LoanApplicationResponseDto dto) {
         Loan loan = entity.getLoan();
         dto.setLoanDto(LoanMapper.entityToDto(loan, new LoanDto()));
-        RepaymentSchedule repaymentSchedule = entity.getRepaymentSchedule();
-        dto.setRepaymentScheduleDto(RepaymentScheduleMapper.entityToDto(repaymentSchedule, new RepaymentScheduleDto()));
         dto.setAmount(entity.getAmount());
-        dto.setLoanStatus(entity.getLoanStatus());
+        dto.setLoanApplicationStatus(entity.getLoanApplicationStatus());
 
         return dto;
     }

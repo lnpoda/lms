@@ -6,10 +6,16 @@ import com.example.lms.entity.RepaymentSchedule;
 public class RepaymentScheduleMapper {
 
     public static RepaymentSchedule dtoToEntity(RepaymentScheduleDto dto, RepaymentSchedule entity) {
-        return null;
+        entity.setDueDate(dto.getDueDate());
+        entity.setLoanPaymentStatus(dto.getLoanPaymentStatus());
+        entity.setPrincipal(dto.getPrincipal());
+        return entity;
     }
 
     public static RepaymentScheduleDto entityToDto(RepaymentSchedule entity, RepaymentScheduleDto dto) {
-        return null;
+        dto.setDueDate(entity.getDueDate());
+        dto.setPrincipal(entity.getPrincipal());
+        dto.setLoanPaymentStatus(entity.getLoanPaymentStatus());
+        return dto;
     }
 }

@@ -1,6 +1,6 @@
 package com.example.lms.constants;
 
-public enum PaymentStatus {
+public enum LoanPaymentStatus {
     PAID,
     PENDING,
     OVERDUE

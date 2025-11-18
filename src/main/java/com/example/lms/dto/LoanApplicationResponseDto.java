@@ -1,6 +1,6 @@
 package com.example.lms.dto;
 
-import com.example.lms.constants.LoanStatus;
+import com.example.lms.constants.LoanApplicationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ public class LoanApplicationResponseDto {
 
     private BigDecimal amount;
 
-    private LoanStatus loanStatus;
+    private LoanApplicationStatus loanApplicationStatus;
 
     private String reviewedBy;
 
@@ -23,5 +23,5 @@ public class LoanApplicationResponseDto {
 
     private LoanDto loanDto;
 
-    private RepaymentScheduleDto repaymentScheduleDto;
+
 }

@@ -1,6 +1,6 @@
 package com.example.lms.entity;
 
-import com.example.lms.constants.LoanStatus;
+import com.example.lms.constants.LoanApplicationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class LoanApplication {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private LoanStatus loanStatus;
+    private LoanApplicationStatus loanApplicationStatus;
 
     @Column
     private String reviewedBy;
@@ -54,6 +54,5 @@ public class LoanApplication {
     @OneToOne
     private Loan loan;
 
-    @OneToOne
-    private RepaymentSchedule repaymentSchedule;
+
 }

@@ -1,11 +1,10 @@
 package com.example.lms.constants;
 
-public enum LoanStatus {
+public enum LoanApplicationStatus {
     NOT_SUBMITTED,
     SUBMITTED,
     UNDER_REVIEW,
     APPROVED,
     REJECTED,
-    PARTIALLY_PAID,
-    PAID
+
 }
