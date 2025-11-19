@@ -43,6 +43,9 @@ public class LoanApplication {
     private LocalDateTime reviewedAt;
 
     @Column
+    private String comments;
+
+    @Column
     private LocalDateTime createdAt;
 
     @Column

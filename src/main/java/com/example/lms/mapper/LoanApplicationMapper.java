@@ -9,7 +9,7 @@ import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 
 public class LoanApplicationMapper {
-    public LoanApplication dtoToEntity(LoanApplicationRequestDto dto, LoanApplication entity) {
+    public static LoanApplication dtoToEntity(LoanApplicationRequestDto dto, LoanApplication entity) {
         CustomerDto customerDto = dto.getCustomerDto();
         Customer customer = CustomerMapper.dtoToEntity(customerDto, new Customer());
         entity.setCustomer(customer);
@@ -21,9 +21,11 @@ public class LoanApplicationMapper {
         return entity;
     }
 
-    public LoanApplicationResponseDto entityToDto(LoanApplication entity, LoanApplicationResponseDto dto) {
-        Loan loan = entity.getLoan();
-        dto.setLoanDto(LoanMapper.entityToDto(loan, new LoanDto()));
+    public static LoanApplicationResponseDto entityToDto(LoanApplication entity, LoanApplicationResponseDto dto) {
+        if (entity.getLoan() != null) {
+            Loan loan = entity.getLoan();
+            dto.setLoanDto(LoanMapper.entityToDto(loan, new LoanDto()));
+        }
         dto.setAmount(entity.getAmount());
         dto.setLoanApplicationStatus(entity.getLoanApplicationStatus());
 

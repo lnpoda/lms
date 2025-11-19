@@ -1,6 +1,5 @@
 package com.example.lms.entity;
 
-import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.constants.LoanPaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +21,7 @@ public class RepaymentSchedule {
     private Long id;
 
     @Column
-    private Date dueDate;
+    private LocalDate dueDate;
 
     @Column
     private BigDecimal principal;

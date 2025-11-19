@@ -17,7 +17,7 @@ public class GlobalException {
                                                             WebRequest request) {
 
         return getPopulatedErrorResponseDto(request.getDescription(false),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
                 ex.getMessage());
     }
@@ -27,7 +27,7 @@ public class GlobalException {
                                                                                      WebRequest request) {
 
         return getPopulatedErrorResponseDto(request.getDescription(false),
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND,
                 LocalDateTime.now(),
                 ex.getMessage());
     }
@@ -36,21 +36,21 @@ public class GlobalException {
     public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistsException(ResourceAlreadyExistsException ex,
                                                                                  WebRequest request) {
         return getPopulatedErrorResponseDto(request.getDescription(false),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
                 ex.getMessage());
     }
 
     private ResponseEntity<ErrorResponseDto> getPopulatedErrorResponseDto(String path,
-                                                                          int code,
+                                                                          HttpStatus httpStatus,
                                                                           LocalDateTime occurredAt,
                                                                           String message) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto();
         errorResponseDto.setPath(path);
-        errorResponseDto.setCode(code);
+        errorResponseDto.setCode(httpStatus.value());
         errorResponseDto.setOccurredAt(occurredAt);
         errorResponseDto.setMessage(message);
 
-        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponseDto, httpStatus);
     }
 }

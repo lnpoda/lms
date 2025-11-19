@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter @Setter
 public class LoanApplicationRequestDto {
-    private Long id;
 
     private BigDecimal amount;
 

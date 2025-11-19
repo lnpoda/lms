@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class LoanApplicationResponseDto {
 
     private String reviewedBy;
 
-    private String reviewedAt;
+    private LocalDateTime reviewedAt;
 
     private LoanDto loanDto;
 
