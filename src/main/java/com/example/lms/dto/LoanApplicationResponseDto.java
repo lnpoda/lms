@@ -24,5 +24,7 @@ public class LoanApplicationResponseDto {
 
     private LoanDto loanDto;
 
+    private String applicationReferenceCode;
+
 
 }

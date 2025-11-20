@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.dto.LoanApplicationRequestDto;
 import com.example.lms.dto.LoanApplicationResponseDto;
 import com.example.lms.entity.Customer;
@@ -9,7 +10,6 @@ import com.example.lms.mapper.LoanApplicationMapper;
 import com.example.lms.repository.CustomerRepository;
 import com.example.lms.repository.LoanApplicationRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -25,8 +25,23 @@ public class LoanApplicationService {
 
         LoanApplication loanApplication = LoanApplicationMapper.dtoToEntity(loanApplicationRequestDto, new LoanApplication());
         loanApplication.setCustomer(customer);
+        loanApplication.setLoanApplicationStatus(LoanApplicationStatus.SUBMITTED);
         LoanApplication savedLoanApplication = loanApplicationRepository.save(loanApplication);
-//        System.out.println("saved loan app: ");
         return LoanApplicationMapper.entityToDto(savedLoanApplication, new LoanApplicationResponseDto());
+    }
+
+    public LoanApplicationStatus getLoanApplicationStatusFromApplicationReferenceCode(String loanApplicationReferenceCode) {
+        LoanApplicationResponseDto loanApplicationResponseDto = getLoanApplicationFromApplicationReferenceCode(loanApplicationReferenceCode);
+        LoanApplicationStatus loanApplicationStatus = loanApplicationResponseDto.getLoanApplicationStatus();
+        if (loanApplicationStatus == null) {
+            return LoanApplicationStatus.NOT_AVAILABLE;
+        }
+        return loanApplicationStatus;
+    }
+
+    private LoanApplicationResponseDto getLoanApplicationFromApplicationReferenceCode(String loanApplicationReferenceCode) {
+        LoanApplication loanApplication = loanApplicationRepository.findByApplicationReferenceCode(loanApplicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan","loanApplicationReferenceCode",loanApplicationReferenceCode));
+        return LoanApplicationMapper.entityToDto(loanApplication, new LoanApplicationResponseDto());
     }
 }
