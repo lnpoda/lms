@@ -16,6 +16,8 @@ public class LoanMapper {
         dto.setType(entity.getType());
         dto.setAmount(entity.getAmount());
         dto.setLoanPaymentStatus(entity.getLoanPaymentStatus());
+        dto.setDisbursementDate(entity.getDisbursementDate());
+        dto.setDisbursementAmount(entity.getDisbursementAmount());
         return dto;
     }
 
@@ -28,6 +30,8 @@ public class LoanMapper {
         entity.setType(dto.getType());
         entity.setLoanPaymentStatus(dto.getLoanPaymentStatus());
         entity.setAmount(dto.getAmount());
+        entity.setDisbursementDate(dto.getDisbursementDate());
+        entity.setDisbursementAmount(dto.getDisbursementAmount());
         return entity;
     }
 }

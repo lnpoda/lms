@@ -54,11 +54,10 @@ public class LoanApplication {
     @Column
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @ManyToOne
     private Customer customer;
 
     @OneToOne
     private Loan loan;
-
 
 }
