@@ -16,3 +16,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+loan:
+  eligibility:
+    annualIncomeThreshold: 30000
+    activeLoansThreshold: 2
+    activeLoanApplicationsThreshold: 2

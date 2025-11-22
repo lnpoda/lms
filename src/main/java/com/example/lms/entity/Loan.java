@@ -36,7 +36,7 @@ public class Loan {
     @Column
     private BigDecimal disbursementAmount;
 
-    @OneToOne
+    @ManyToOne
     private Customer customer;
 
     @OneToOne

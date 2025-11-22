@@ -22,4 +22,9 @@ public class LoanApplicationReviewController {
         List<LoanApplication> loanApplications = loanApplicationReviewService.getPendingLoanApplications();
         return new ResponseEntity<>(loanApplications, HttpStatus.OK);
     }
+
+    @GetMapping("/eligibility")
+    public ResponseEntity<Boolean> getLoanEligibility() {
+        return null;
+    }
 }
