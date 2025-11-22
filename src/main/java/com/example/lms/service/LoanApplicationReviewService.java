@@ -2,9 +2,10 @@ package com.example.lms.service;
 
 import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.constants.LoanPaymentStatus;
-import com.example.lms.dto.LoanApplicationRequestDto;
+import com.example.lms.dto.LoanApplicationReviewDto;
 import com.example.lms.entity.LoanApplication;
-import com.example.lms.mapper.LoanApplicationMapper;
+import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.mapper.LoanApplicationReviewMapper;
 import com.example.lms.repository.LoanApplicationRepository;
 import com.example.lms.repository.LoanRepository;
 import com.example.lms.utils.business.LoanEligibilityRules;
@@ -25,16 +26,31 @@ public class LoanApplicationReviewService {
 
     private final LoanEligibilityRules loanEligibilityRules;
 
-    public List<LoanApplication> getPendingLoanApplications() {
-        List<LoanApplication> pendingApplications = loanApplicationRepository.findByLoanApplicationStatusIn(
+    public List<LoanApplicationReviewDto> getPendingLoanApplications() {
+        return loanApplicationRepository.findByLoanApplicationStatusIn(
                 List.of(LoanApplicationStatus.SUBMITTED, LoanApplicationStatus.UNDER_REVIEW)
-        );
+        ).stream()
+                .map(loanApplication ->
+                        LoanApplicationReviewMapper.loanApplicationEntityToReviewDto(loanApplication,
+                                new LoanApplicationReviewDto()))
+                .toList();
 
-        return pendingApplications;
     }
 
-    public Boolean reviewLoanEligibility(LoanApplicationRequestDto loanApplicationRequestDto) {
-        LoanApplication loanApplication = LoanApplicationMapper.dtoToEntity(loanApplicationRequestDto, new LoanApplication());
+    public Boolean reviewLoanEligibility(String applicationReferenceCode) {
+        LoanApplication loanApplication = loanApplicationRepository
+                .findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loanApplication","applicationReferenceCode", applicationReferenceCode));
+
+        LoanApplicationReviewDto loanApplicationReviewDto = LoanApplicationReviewMapper
+                .loanApplicationEntityToReviewDto(loanApplication, new LoanApplicationReviewDto());
+        return getLoanEligibility(loanApplicationReviewDto);
+    }
+
+    public Boolean getLoanEligibility(LoanApplicationReviewDto loanApplicationReviewDto) {
+        LoanApplication loanApplication =
+                LoanApplicationReviewMapper
+                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication());
         return getLoanEligibilityFailures(loanApplication).isEmpty();
     }
 
