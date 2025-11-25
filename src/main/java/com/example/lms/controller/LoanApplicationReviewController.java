@@ -1,14 +1,12 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.LoanApplicationReviewDto;
+import com.example.lms.dto.ResponseDto;
 import com.example.lms.service.LoanApplicationReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,8 +23,21 @@ public class LoanApplicationReviewController {
     }
 
     @GetMapping("/{applicationReferenceCode}/eligibility")
-    public ResponseEntity<Boolean> reviewLoanEligibility(@PathVariable String applicatioReferenceCode) {
-        Boolean eligibility = loanApplicationReviewService.reviewLoanEligibility(applicatioReferenceCode);
+    public ResponseEntity<Boolean> reviewLoanEligibility(@PathVariable String applicationReferenceCode) {
+        Boolean eligibility = loanApplicationReviewService.reviewLoanEligibility(applicationReferenceCode);
         return new ResponseEntity<>(eligibility, HttpStatus.OK);
     }
+
+    @PostMapping("/approve")
+    public ResponseEntity<HttpStatus> approveLoanApplication(@RequestBody LoanApplicationReviewDto loanApplicationReviewDto) {
+        loanApplicationReviewService.approveLoanApplication(loanApplicationReviewDto);
+        return new ResponseEntity<>(HttpStatus.CREATED); //TODO: make ResponseEntity carry ResponseDto
+    }
+
+    @PostMapping("/reject")
+    public ResponseEntity<HttpStatus> rejectLoanApplication(@RequestBody LoanApplicationReviewDto loanApplicationReviewDto) {
+        loanApplicationReviewService.rejectLoanApplication(loanApplicationReviewDto);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); //TODO: make ResponseEntity carry ResponseDto
+    }
+
 }

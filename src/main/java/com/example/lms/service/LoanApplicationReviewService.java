@@ -3,6 +3,7 @@ package com.example.lms.service;
 import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.constants.LoanPaymentStatus;
 import com.example.lms.dto.LoanApplicationReviewDto;
+import com.example.lms.dto.LoanDto;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.LoanApplicationReviewMapper;
@@ -34,7 +35,6 @@ public class LoanApplicationReviewService {
                         LoanApplicationReviewMapper.loanApplicationEntityToReviewDto(loanApplication,
                                 new LoanApplicationReviewDto()))
                 .toList();
-
     }
 
     public Boolean reviewLoanEligibility(String applicationReferenceCode) {
@@ -86,5 +86,31 @@ public class LoanApplicationReviewService {
         }
 
         return eligibilityFailures;
+    }
+
+    public void approveLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
+
+        LoanDto loanDto = new LoanDto();
+        loanDto.setCustomerDto(loanApplicationReviewDto.getLoanApplicationRequestDto().getCustomerDto());
+        loanDto.setAmount(loanApplicationReviewDto.getLoanApplicationRequestDto().getAmount());
+        loanApplicationReviewDto.getLoanApplicationResponseDto().setLoanDto(loanDto);
+
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
+    }
+
+    public void rejectLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED);
+    }
+
+    private void respondToLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto,
+                                          LoanApplicationStatus resultingLoanApplicationStatus) {
+        loanApplicationReviewDto
+                .getLoanApplicationResponseDto()
+                .setLoanApplicationStatus(resultingLoanApplicationStatus);
+        LoanApplication loanApplication = LoanApplicationReviewMapper
+                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication());
+
+
+        loanApplicationRepository.save(loanApplication);
     }
 }
