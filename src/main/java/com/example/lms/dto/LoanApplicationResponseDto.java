@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 public class LoanApplicationResponseDto {
 
-    private BigDecimal amount;
+    private BigDecimal principal;
 
     private LoanApplicationStatus loanApplicationStatus;
 
@@ -22,9 +22,10 @@ public class LoanApplicationResponseDto {
 
     private LocalDateTime reviewedAt;
 
-    private LoanDto loanDto;
-
     private String applicationReferenceCode;
 
+    private LoanDto loanDto;
+
+    private RepaymentScheduleDto repaymentScheduleDto;
 
 }

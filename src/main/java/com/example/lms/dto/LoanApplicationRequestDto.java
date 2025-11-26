@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Getter @Setter
 public class LoanApplicationRequestDto {
 
-    private BigDecimal amount;
+    private BigDecimal principal;
 
     private int termMonths;
 

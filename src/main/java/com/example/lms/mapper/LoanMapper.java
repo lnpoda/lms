@@ -14,22 +14,22 @@ public class LoanMapper {
         dto.setRepaymentScheduleDto(RepaymentScheduleMapper.entityToDto(entity.getRepaymentSchedule(),
                 new RepaymentScheduleDto()));
         dto.setType(entity.getType());
-        dto.setAmount(entity.getAmount());
+        dto.setPrincipal(entity.getPrincipal());
         dto.setLoanPaymentStatus(entity.getLoanPaymentStatus());
         dto.setDisbursementDate(entity.getDisbursementDate());
         dto.setDisbursementAmount(entity.getDisbursementAmount());
         return dto;
     }
 
-    public static Loan dtoToEntity(LoanDto dto, Loan entity) {
-        Customer customer = CustomerMapper.dtoToEntity(dto.getCustomerDto(), new Customer());
+    public static Loan dtoToEntity(LoanDto dto, Loan entity, Customer customer, RepaymentSchedule repaymentSchedule) {
+//        Customer customer = CustomerMapper.dtoToEntity(dto.getCustomerDto(), new Customer());
         entity.setCustomer(customer);
-        RepaymentSchedule repaymentSchedule = RepaymentScheduleMapper.dtoToEntity(dto.getRepaymentScheduleDto(),
-                new RepaymentSchedule());
+//        RepaymentSchedule repaymentSchedule = RepaymentScheduleMapper.dtoToEntity(dto.getRepaymentScheduleDto(),
+//                new RepaymentSchedule());
         entity.setRepaymentSchedule(repaymentSchedule);
         entity.setType(dto.getType());
         entity.setLoanPaymentStatus(dto.getLoanPaymentStatus());
-        entity.setAmount(dto.getAmount());
+        entity.setPrincipal(dto.getPrincipal());
         entity.setDisbursementDate(dto.getDisbursementDate());
         entity.setDisbursementAmount(dto.getDisbursementAmount());
         return entity;

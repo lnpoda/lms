@@ -21,4 +21,6 @@ public class ErrorResponseDto {
     LocalDateTime occurredAt;
 
     String message;
+
+    StackTraceElement[] stackTrace;
 }

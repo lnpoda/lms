@@ -16,7 +16,7 @@ public class LoanDto {
 
     private CustomerDto customerDto;
 
-    private BigDecimal amount;
+    private BigDecimal principal;
 
     private String type;
 

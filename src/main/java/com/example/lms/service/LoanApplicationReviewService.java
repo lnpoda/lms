@@ -4,11 +4,19 @@ import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.constants.LoanPaymentStatus;
 import com.example.lms.dto.LoanApplicationReviewDto;
 import com.example.lms.dto.LoanDto;
+import com.example.lms.dto.RepaymentScheduleDto;
+import com.example.lms.entity.Customer;
+import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
+import com.example.lms.entity.RepaymentSchedule;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.LoanApplicationReviewMapper;
+import com.example.lms.mapper.LoanMapper;
+import com.example.lms.mapper.RepaymentScheduleMapper;
+import com.example.lms.repository.CustomerRepository;
 import com.example.lms.repository.LoanApplicationRepository;
 import com.example.lms.repository.LoanRepository;
+import com.example.lms.repository.RepaymentScheduleRepository;
 import com.example.lms.utils.business.LoanEligibilityRules;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +34,10 @@ public class LoanApplicationReviewService {
     private final LoanRepository loanRepository;
 
     private final LoanEligibilityRules loanEligibilityRules;
+
+    private final CustomerRepository customerRepository;
+
+    private final RepaymentScheduleRepository repaymentScheduleRepository;
 
     public List<LoanApplicationReviewDto> getPendingLoanApplications() {
         return loanApplicationRepository.findByLoanApplicationStatusIn(
@@ -48,9 +60,12 @@ public class LoanApplicationReviewService {
     }
 
     public Boolean getLoanEligibility(LoanApplicationReviewDto loanApplicationReviewDto) {
+
+        Customer customer = getCustomerEntityFromReviewDto(loanApplicationReviewDto);
+
         LoanApplication loanApplication =
                 LoanApplicationReviewMapper
-                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication());
+                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, null);
         return getLoanEligibilityFailures(loanApplication).isEmpty();
     }
 
@@ -92,25 +107,55 @@ public class LoanApplicationReviewService {
 
         LoanDto loanDto = new LoanDto();
         loanDto.setCustomerDto(loanApplicationReviewDto.getLoanApplicationRequestDto().getCustomerDto());
-        loanDto.setAmount(loanApplicationReviewDto.getLoanApplicationRequestDto().getAmount());
+        loanDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationRequestDto().getPrincipal());
+
+        RepaymentScheduleDto repaymentScheduleDto = new RepaymentScheduleDto();
+        repaymentScheduleDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
+        repaymentScheduleDto.setLoanPaymentStatus(LoanPaymentStatus.PENDING);
+        loanApplicationReviewDto.setRepaymentScheduleDto(repaymentScheduleDto);
+
+        loanDto.setRepaymentScheduleDto(repaymentScheduleDto);
         loanApplicationReviewDto.getLoanApplicationResponseDto().setLoanDto(loanDto);
 
-        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
+        Customer customer = getCustomerEntityFromReviewDto(loanApplicationReviewDto);
+
+        RepaymentSchedule repaymentSchedule = RepaymentScheduleMapper.dtoToEntity(repaymentScheduleDto,
+                new RepaymentSchedule());
+        repaymentScheduleRepository.save(repaymentSchedule);
+
+        Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
+        loanRepository.save(loan);
+
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED, loan);
     }
 
     public void rejectLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
-        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED);
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED, null);
     }
 
     private void respondToLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto,
-                                          LoanApplicationStatus resultingLoanApplicationStatus) {
+                                          LoanApplicationStatus resultingLoanApplicationStatus,
+                                          Loan loan) {
+        Customer customer = getCustomerEntityFromReviewDto(loanApplicationReviewDto);
+
         loanApplicationReviewDto
                 .getLoanApplicationResponseDto()
                 .setLoanApplicationStatus(resultingLoanApplicationStatus);
         LoanApplication loanApplication = LoanApplicationReviewMapper
-                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication());
-
+                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, loan);
 
         loanApplicationRepository.save(loanApplication);
+    }
+
+    private Customer getCustomerEntityFromReviewDto(LoanApplicationReviewDto loanApplicationReviewDto) {
+
+        return customerRepository.findByMobileNumber(loanApplicationReviewDto
+                        .getLoanApplicationRequestDto()
+                        .getCustomerDto()
+                        .getMobileNumber())
+                .orElseThrow(()->new ResourceNotFoundException("customer", "mobileNumber", loanApplicationReviewDto
+                        .getLoanApplicationRequestDto()
+                        .getCustomerDto()
+                        .getMobileNumber()));
     }
 }

@@ -24,7 +24,7 @@ public class LoanApplication {
     private String applicationReferenceCode;
 
     @Column
-    private BigDecimal amount;
+    private BigDecimal principal;
 
     @Column
     private int termMonths;

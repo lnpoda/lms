@@ -13,4 +13,6 @@ public class LoanApplicationReviewDto {
     private LoanApplicationRequestDto loanApplicationRequestDto;
 
     private LoanApplicationResponseDto loanApplicationResponseDto;
+
+    private RepaymentScheduleDto repaymentScheduleDto;
 }

@@ -24,7 +24,9 @@ public class LoanApplicationService {
                 .orElseThrow(()->new ResourceNotFoundException("customer", "mobileNumber", loanApplicationRequestDto.getCustomerDto().getMobileNumber()));
 
         // TODO: verify if similar loan application exists before submission
-        LoanApplication loanApplication = LoanApplicationMapper.dtoToEntity(loanApplicationRequestDto, new LoanApplication());
+        LoanApplication loanApplication = LoanApplicationMapper.dtoToEntity(loanApplicationRequestDto,
+                new LoanApplication(),
+                customer);
         loanApplication.setCustomer(customer);
         loanApplication.setLoanApplicationStatus(LoanApplicationStatus.SUBMITTED);
         LoanApplication savedLoanApplication = loanApplicationRepository.save(loanApplication);

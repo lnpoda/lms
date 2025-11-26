@@ -21,15 +21,15 @@ public class LoanApplicationReviewMapper {
         return dto;
     }
 
-    public static LoanApplication reviewDtoToLoanApplicationEntity(LoanApplicationReviewDto dto, LoanApplication entity) {
-        Customer customer = CustomerMapper.dtoToEntity(dto.getLoanApplicationRequestDto().getCustomerDto(), new Customer());
+    public static LoanApplication reviewDtoToLoanApplicationEntity(LoanApplicationReviewDto dto, LoanApplication entity, Customer customer, Loan loan) {
+//        Customer customer = CustomerMapper.dtoToEntity(dto.getLoanApplicationRequestDto().getCustomerDto(), new Customer());
         entity.setCustomer(customer);
 
-        Loan loan = LoanMapper.dtoToEntity(dto.getLoanApplicationResponseDto().getLoanDto(), new Loan());
+//        Loan loan = LoanMapper.dtoToEntity(dto.getLoanApplicationResponseDto().getLoanDto(), new Loan(), customer);
         entity.setLoan(loan);
 
         entity.setApplicationReferenceCode(dto.getLoanApplicationResponseDto().getApplicationReferenceCode());
-        entity.setAmount(dto.getLoanApplicationResponseDto().getAmount());
+        entity.setPrincipal(dto.getLoanApplicationResponseDto().getPrincipal());
         entity.setPurpose(dto.getLoanApplicationRequestDto().getPurpose());
         entity.setTermMonths(dto.getLoanApplicationRequestDto().getTermMonths());
         entity.setCustomerAnnualIncome(dto.getLoanApplicationRequestDto().getCustomerAnnualIncome());
@@ -40,7 +40,7 @@ public class LoanApplicationReviewMapper {
     private static LoanApplicationRequestDto loanApplicationEntityToRequestDto(LoanApplication entity, LoanApplicationRequestDto dto) {
         CustomerDto customerDto = CustomerMapper.entityToDto(entity.getCustomer(), new CustomerDto());
         dto.setCustomerDto(customerDto);
-        dto.setAmount(entity.getAmount());
+        dto.setPrincipal(entity.getPrincipal());
         dto.setPurpose(entity.getPurpose());
         dto.setTermMonths(entity.getTermMonths());
         dto.setCustomerAnnualIncome(entity.getCustomerAnnualIncome());

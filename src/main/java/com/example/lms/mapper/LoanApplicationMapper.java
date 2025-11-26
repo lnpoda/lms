@@ -14,11 +14,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class LoanApplicationMapper {
-    public static LoanApplication dtoToEntity(LoanApplicationRequestDto dto, LoanApplication entity) {
-        CustomerDto customerDto = dto.getCustomerDto();
-        Customer customer = CustomerMapper.dtoToEntity(customerDto, new Customer());
+    public static LoanApplication dtoToEntity(LoanApplicationRequestDto dto, LoanApplication entity, Customer customer) {
+//        CustomerDto customerDto = dto.getCustomerDto();
+//        Customer customer = CustomerMapper.dtoToEntity(customerDto, new Customer());
         entity.setCustomer(customer);
-        entity.setAmount(dto.getAmount());
+        entity.setPrincipal(dto.getPrincipal());
         entity.setPurpose(dto.getPurpose());
         entity.setCustomerAnnualIncome(dto.getCustomerAnnualIncome());
         entity.setTermMonths(dto.getTermMonths());
@@ -32,7 +32,7 @@ public class LoanApplicationMapper {
             Loan loan = entity.getLoan();
             dto.setLoanDto(LoanMapper.entityToDto(loan, new LoanDto()));
         }
-        dto.setAmount(entity.getAmount());
+        dto.setPrincipal(entity.getPrincipal());
         dto.setLoanApplicationStatus(entity.getLoanApplicationStatus());
         dto.setApplicationReferenceCode(entity.getApplicationReferenceCode());
 

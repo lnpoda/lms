@@ -22,7 +22,7 @@ public class Loan {
 
 
     @Column
-    private BigDecimal amount;
+    private BigDecimal principal;
 
     @Column
     private String type;

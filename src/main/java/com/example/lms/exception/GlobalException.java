@@ -19,7 +19,8 @@ public class GlobalException {
         return getPopulatedErrorResponseDto(request.getDescription(false),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
-                ex.getMessage());
+                ex.getMessage(),
+                ex.getStackTrace());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -29,7 +30,8 @@ public class GlobalException {
         return getPopulatedErrorResponseDto(request.getDescription(false),
                 HttpStatus.NOT_FOUND,
                 LocalDateTime.now(),
-                ex.getMessage());
+                ex.getMessage(),
+                ex.getStackTrace());
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -38,18 +40,21 @@ public class GlobalException {
         return getPopulatedErrorResponseDto(request.getDescription(false),
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
-                ex.getMessage());
+                ex.getMessage(),
+                ex.getStackTrace());
     }
 
     private ResponseEntity<ErrorResponseDto> getPopulatedErrorResponseDto(String path,
                                                                           HttpStatus httpStatus,
                                                                           LocalDateTime occurredAt,
-                                                                          String message) {
+                                                                          String message,
+                                                                          StackTraceElement[] stackTraceElement) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto();
         errorResponseDto.setPath(path);
         errorResponseDto.setCode(httpStatus.value());
         errorResponseDto.setOccurredAt(occurredAt);
         errorResponseDto.setMessage(message);
+        errorResponseDto.setStackTrace(stackTraceElement);
 
         return new ResponseEntity<>(errorResponseDto, httpStatus);
     }
