@@ -103,6 +103,7 @@ public class LoanApplicationReviewService {
         return eligibilityFailures;
     }
 
+    //TODO: throw an exception if sent an application with status other than submitted
     public void approveLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
 
         LoanDto loanDto = new LoanDto();
@@ -129,6 +130,7 @@ public class LoanApplicationReviewService {
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED, loan);
     }
 
+    //TODO: throw an exception if sent an application with status other than submitted
     public void rejectLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED, null);
     }
@@ -144,7 +146,10 @@ public class LoanApplicationReviewService {
         LoanApplication loanApplication = LoanApplicationReviewMapper
                 .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, loan);
 
-        loanApplicationRepository.save(loanApplication);
+        if (loanApplicationRepository.findByApplicationReferenceCode(loanApplication.getApplicationReferenceCode()).isEmpty()) {
+            loanApplicationRepository.save(loanApplication);
+        }
+
     }
 
     private Customer getCustomerEntityFromReviewDto(LoanApplicationReviewDto loanApplicationReviewDto) {

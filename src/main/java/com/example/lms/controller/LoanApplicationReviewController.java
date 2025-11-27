@@ -1,7 +1,6 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.LoanApplicationReviewDto;
-import com.example.lms.dto.ResponseDto;
 import com.example.lms.service.LoanApplicationReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
