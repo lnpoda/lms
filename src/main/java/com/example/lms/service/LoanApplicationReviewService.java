@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -103,8 +104,16 @@ public class LoanApplicationReviewService {
         return eligibilityFailures;
     }
 
-    //TODO: throw an exception if sent an application with status other than submitted
-    public void approveLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
+    public void approveLoanApplication(String applicationReferenceCode) {
+
+        LoanApplication loanApplication = loanApplicationRepository
+                .findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loanApplication",
+                        "applicationReferenceCode",
+                        applicationReferenceCode));
+
+        LoanApplicationReviewDto loanApplicationReviewDto = LoanApplicationReviewMapper
+                .loanApplicationEntityToReviewDto(loanApplication, new LoanApplicationReviewDto());
 
         LoanDto loanDto = new LoanDto();
         loanDto.setCustomerDto(loanApplicationReviewDto.getLoanApplicationRequestDto().getCustomerDto());
@@ -127,28 +136,51 @@ public class LoanApplicationReviewService {
         Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
         loanRepository.save(loan);
 
-        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED, loan);
+
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
     }
 
-    //TODO: throw an exception if sent an application with status other than submitted
-    public void rejectLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto) {
-        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED, null);
+    public void rejectLoanApplication(String applicationReferenceCode) {
+        LoanApplication loanApplication = loanApplicationRepository
+                .findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loanApplication",
+                        "applicationReferenceCode",
+                        applicationReferenceCode));
+
+        LoanApplicationReviewDto loanApplicationReviewDto = LoanApplicationReviewMapper
+                .loanApplicationEntityToReviewDto(loanApplication, new LoanApplicationReviewDto());
+
+
+        respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED);
     }
 
     private void respondToLoanApplication(LoanApplicationReviewDto loanApplicationReviewDto,
-                                          LoanApplicationStatus resultingLoanApplicationStatus,
-                                          Loan loan) {
-        Customer customer = getCustomerEntityFromReviewDto(loanApplicationReviewDto);
+                                          LoanApplicationStatus resultingLoanApplicationStatus) {
 
-        loanApplicationReviewDto
+        String applicationReferenceCode = loanApplicationReviewDto
                 .getLoanApplicationResponseDto()
-                .setLoanApplicationStatus(resultingLoanApplicationStatus);
-        LoanApplication loanApplication = LoanApplicationReviewMapper
-                .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, loan);
+                .getApplicationReferenceCode();
 
-        if (loanApplicationRepository.findByApplicationReferenceCode(loanApplication.getApplicationReferenceCode()).isEmpty()) {
-            loanApplicationRepository.save(loanApplication);
-        }
+        LoanApplication existingLoanApplication = loanApplicationRepository
+                .findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan",
+                        "applicationReferenceCode",
+                        applicationReferenceCode));
+
+        existingLoanApplication.setLoanApplicationStatus(resultingLoanApplicationStatus);
+        loanApplicationRepository.save(existingLoanApplication);
+
+//        if (existingLoanApplicationOptional.isPresent()) {
+//            existingLoanApplicationOptional.get().setLoanApplicationStatus(resultingLoanApplicationStatus);
+//            loanApplicationRepository.save(existingLoanApplicationOptional.get());
+//        }
+//        else {
+//            LoanApplication loanApplication = LoanApplicationReviewMapper
+//                    .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, loan);
+//
+//            loanApplication.setLoanApplicationStatus(resultingLoanApplicationStatus);
+//            loanApplicationRepository.save(loanApplication);
+//        }
 
     }
 

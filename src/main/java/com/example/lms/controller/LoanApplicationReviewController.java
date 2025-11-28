@@ -15,6 +15,7 @@ import java.util.List;
 public class LoanApplicationReviewController {
 
     private final LoanApplicationReviewService loanApplicationReviewService;
+
     @GetMapping("/pending")
     public ResponseEntity<List<LoanApplicationReviewDto>> getPendingLoanApplications() {
         List<LoanApplicationReviewDto> loanApplications = loanApplicationReviewService.getPendingLoanApplications();
@@ -27,15 +28,15 @@ public class LoanApplicationReviewController {
         return new ResponseEntity<>(eligibility, HttpStatus.OK);
     }
 
-    @PostMapping("/approve")
-    public ResponseEntity<HttpStatus> approveLoanApplication(@RequestBody LoanApplicationReviewDto loanApplicationReviewDto) {
-        loanApplicationReviewService.approveLoanApplication(loanApplicationReviewDto);
+    @PostMapping("{applicationReferenceCode}/approve")
+    public ResponseEntity<HttpStatus> approveLoanApplication(@PathVariable String applicationReferenceCode) {
+        loanApplicationReviewService.approveLoanApplication(applicationReferenceCode);
         return new ResponseEntity<>(HttpStatus.CREATED); //TODO: make ResponseEntity carry ResponseDto
     }
 
-    @PostMapping("/reject")
-    public ResponseEntity<HttpStatus> rejectLoanApplication(@RequestBody LoanApplicationReviewDto loanApplicationReviewDto) {
-        loanApplicationReviewService.rejectLoanApplication(loanApplicationReviewDto);
+    @PostMapping("{applicationReferenceCode}/reject")
+    public ResponseEntity<HttpStatus> rejectLoanApplication(@PathVariable String applicationReferenceCode) {
+        loanApplicationReviewService.rejectLoanApplication(applicationReferenceCode);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT); //TODO: make ResponseEntity carry ResponseDto
     }
 
