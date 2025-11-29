@@ -1,15 +1,15 @@
 package com.example.lms.service;
 
+import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.repository.LoanApplicationRepository;
+import com.example.lms.repository.LoanRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import java.math.RoundingMode;
 
 @AllArgsConstructor
 @Service
@@ -17,21 +17,28 @@ public class DisbursementService {
 
     private final LoanApplicationRepository loanApplicationRepository;
 
-    public BigDecimal calculateDisbursement(String applicationReferenceCode) {
+    private final LoanRepository loanRepository;
+
+    public void setDisbursementAmountFromApplicationReferenceCode(String applicationReferenceCode) {
         LoanApplication loanApplication = loanApplicationRepository
                 .findByApplicationReferenceCode(applicationReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loanApplication",
                         "applicationReferenceCode",
                         applicationReferenceCode));
 
+        Loan loan = loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan",
+                        "applicationReferenceCode",
+                        applicationReferenceCode));
 
-        // If applied principle is less than half the annual income, return the applied principle, else return half the annual income
-        if (loanApplication.getCustomerAnnualIncome().divide(BigDecimal.valueOf(2)).compareTo(loanApplication.getPrincipal()) >= 0) {
-            return loanApplication.getPrincipal();
-        } else {
-            return loanApplication
-                    .getCustomerAnnualIncome()
-                    .divide(BigDecimal.valueOf(2));
-        }
+        loan.setDisbursementAmount(calculateDisbursement(loanApplication));
+        loanRepository.save(loan);
+    }
+
+    private BigDecimal calculateDisbursement(LoanApplication loanApplication) {
+
+        return loanApplication.getPrincipal().divide(BigDecimal.valueOf(loanApplication.getTermMonths()),
+                2,
+                RoundingMode.HALF_EVEN);
     }
 }

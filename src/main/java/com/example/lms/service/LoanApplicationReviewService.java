@@ -40,6 +40,8 @@ public class LoanApplicationReviewService {
 
     private final RepaymentScheduleRepository repaymentScheduleRepository;
 
+    private final DisbursementService disbursementService;
+
     public List<LoanApplicationReviewDto> getPendingLoanApplications() {
         return loanApplicationRepository.findByLoanApplicationStatusIn(
                 List.of(LoanApplicationStatus.SUBMITTED, LoanApplicationStatus.UNDER_REVIEW)
@@ -120,7 +122,7 @@ public class LoanApplicationReviewService {
         loanDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationRequestDto().getPrincipal());
 
         RepaymentScheduleDto repaymentScheduleDto = new RepaymentScheduleDto();
-        repaymentScheduleDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
+        repaymentScheduleDto.setPrincipal(calculatePrincipal(loanApplication)); //(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
         repaymentScheduleDto.setLoanPaymentStatus(LoanPaymentStatus.PENDING);
         loanApplicationReviewDto.setRepaymentScheduleDto(repaymentScheduleDto);
 
@@ -134,10 +136,12 @@ public class LoanApplicationReviewService {
         repaymentScheduleRepository.save(repaymentSchedule);
 
         Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
+        loan.setLoanApplication(loanApplication);
         loanRepository.save(loan);
 
-
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
+
+        disbursementService.setDisbursementAmountFromApplicationReferenceCode(applicationReferenceCode);
     }
 
     public void rejectLoanApplication(String applicationReferenceCode) {
@@ -194,5 +198,16 @@ public class LoanApplicationReviewService {
                         .getLoanApplicationRequestDto()
                         .getCustomerDto()
                         .getMobileNumber()));
+    }
+
+    private BigDecimal calculatePrincipal(LoanApplication loanApplication) {
+        if (loanApplication.getCustomerAnnualIncome().multiply(BigDecimal.valueOf(2))
+                .compareTo(loanApplication.getPrincipal()) >= 0) {
+            return loanApplication.getPrincipal();
+        } else {
+            return loanApplication
+                    .getCustomerAnnualIncome()
+                    .multiply(BigDecimal.valueOf(2));
+        }
     }
 }
