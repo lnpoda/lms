@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.constants.LoanApplicationStatus;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
@@ -31,7 +33,10 @@ public class DisbursementService {
                         "applicationReferenceCode",
                         applicationReferenceCode));
 
-        loan.setDisbursementAmount(calculateDisbursement(loanApplication));
+        if (loan.getDisbursementAmount() == null) {
+            loan.setDisbursementAmount(calculateDisbursement(loanApplication));
+        }
+
         loanRepository.save(loan);
     }
 
@@ -40,5 +45,12 @@ public class DisbursementService {
         return loanApplication.getPrincipal().divide(BigDecimal.valueOf(loanApplication.getTermMonths()),
                 2,
                 RoundingMode.HALF_EVEN);
+    }
+
+    private LocalDateTime calculateDisbursementDate(LoanApplication loanApplication){
+        if ((loanApplication.getLoanApplicationStatus() == LoanApplicationStatus.APPROVED)) {
+            return loanApplication.getReviewedAt().plusDays(5);
+        }
+        return null;
     }
 }

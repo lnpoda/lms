@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class LoanDto {
 
     private RepaymentScheduleDto repaymentScheduleDto;
 
-    private LocalDate disbursementDate;
+    private LocalDateTime disbursementDate;
 
     private BigDecimal disbursementAmount;
 

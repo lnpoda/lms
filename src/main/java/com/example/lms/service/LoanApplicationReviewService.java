@@ -9,6 +9,7 @@ import com.example.lms.entity.Customer;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.entity.RepaymentSchedule;
+import com.example.lms.events.LoanApplicationReviewedEvent;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.LoanApplicationReviewMapper;
 import com.example.lms.mapper.LoanMapper;
@@ -19,6 +20,7 @@ import com.example.lms.repository.LoanRepository;
 import com.example.lms.repository.RepaymentScheduleRepository;
 import com.example.lms.utils.business.LoanEligibilityRules;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,6 +43,8 @@ public class LoanApplicationReviewService {
     private final RepaymentScheduleRepository repaymentScheduleRepository;
 
     private final DisbursementService disbursementService;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public List<LoanApplicationReviewDto> getPendingLoanApplications() {
         return loanApplicationRepository.findByLoanApplicationStatusIn(
@@ -135,9 +139,12 @@ public class LoanApplicationReviewService {
                 new RepaymentSchedule());
         repaymentScheduleRepository.save(repaymentSchedule);
 
-        Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
-        loan.setLoanApplication(loanApplication);
-        loanRepository.save(loan);
+        if (loanApplication.getLoan() == null) {
+            Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
+            loan.setLoanApplication(loanApplication);
+            loanRepository.save(loan);
+            loanApplication.setLoan(loan);
+        }
 
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
 
@@ -174,17 +181,8 @@ public class LoanApplicationReviewService {
         existingLoanApplication.setLoanApplicationStatus(resultingLoanApplicationStatus);
         loanApplicationRepository.save(existingLoanApplication);
 
-//        if (existingLoanApplicationOptional.isPresent()) {
-//            existingLoanApplicationOptional.get().setLoanApplicationStatus(resultingLoanApplicationStatus);
-//            loanApplicationRepository.save(existingLoanApplicationOptional.get());
-//        }
-//        else {
-//            LoanApplication loanApplication = LoanApplicationReviewMapper
-//                    .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, loan);
-//
-//            loanApplication.setLoanApplicationStatus(resultingLoanApplicationStatus);
-//            loanApplicationRepository.save(loanApplication);
-//        }
+        LoanApplicationReviewedEvent loanApplicationReviewedEvent = new LoanApplicationReviewedEvent(existingLoanApplication);
+        applicationEventPublisher.publishEvent(loanApplicationReviewedEvent);
 
     }
 

@@ -6,7 +6,7 @@ spring:
     name: lms
 
   datasource:
-    url: ""
+    url: jdbc:h2:mem:testdb
     username: sa
     password: ""
   jpa:
@@ -16,6 +16,13 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+logging:
+  level:
+    org:
+      springframework:
+        context:
+          event: DEBUG
 
 loan:
   eligibility:
