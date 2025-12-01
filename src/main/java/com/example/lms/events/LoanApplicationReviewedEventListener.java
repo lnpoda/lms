@@ -18,6 +18,7 @@ public class LoanApplicationReviewedEventListener {
     public void handleLoanApplicationReviewedEvent(LoanApplicationReviewedEvent event) {
         LoanApplication loanApplication = event.loanApplication();
         loanApplication.setReviewedAt(LocalDateTime.now());
+        loanApplication.setReviewedBy("anonymousReviewer");
         loanApplicationRepository.save(loanApplication);
 
     }

@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -126,8 +125,8 @@ public class LoanApplicationReviewService {
         loanDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationRequestDto().getPrincipal());
 
         RepaymentScheduleDto repaymentScheduleDto = new RepaymentScheduleDto();
-        repaymentScheduleDto.setPrincipal(calculatePrincipal(loanApplication)); //(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
-        repaymentScheduleDto.setLoanPaymentStatus(LoanPaymentStatus.PENDING);
+//        repaymentScheduleDto.setPrincipal(calculatePrincipal(loanApplication)); //(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
+//        repaymentScheduleDto.setLoanPaymentStatus(LoanPaymentStatus.PENDING);
         loanApplicationReviewDto.setRepaymentScheduleDto(repaymentScheduleDto);
 
         loanDto.setRepaymentScheduleDto(repaymentScheduleDto);

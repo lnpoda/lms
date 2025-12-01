@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,14 +22,9 @@ public class RepaymentSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private LocalDate dueDate;
-
-    @Column
-    private BigDecimal principal;
-
-    @Column
-    private LoanPaymentStatus loanPaymentStatus;
+    @MapKeyColumn(name = "due_date")
+    @ElementCollection
+    Map<LocalDate, RepaymentScheduleEntry> repaymentSchedule = new HashMap<>();
 
     @OneToOne
     private Loan loan;
