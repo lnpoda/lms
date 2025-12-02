@@ -18,7 +18,11 @@ public class RepaymentScheduleEntry {
 
     private BigDecimal principal;
 
-    private Integer interest;
+    private BigDecimal interestPaymentAmount;
+
+    private BigDecimal principalPaymentAmount;
+
+    private BigDecimal totalPaymentAmount;
 
     private LoanPaymentStatus loanPaymentStatus;
 }

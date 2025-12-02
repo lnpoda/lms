@@ -31,7 +31,7 @@ public class LoanApplication {
     private BigDecimal principal;
 
     @Column
-    private int termMonths;
+    private Integer termMonths;
 
     @Column
     private String purpose;
