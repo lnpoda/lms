@@ -45,6 +45,8 @@ public class LoanApplicationReviewService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final RepaymentService repaymentService;
+
     public List<LoanApplicationReviewDto> getPendingLoanApplications() {
         return loanApplicationRepository.findByLoanApplicationStatusIn(
                 List.of(LoanApplicationStatus.SUBMITTED, LoanApplicationStatus.UNDER_REVIEW)
