@@ -7,6 +7,10 @@ import com.example.lms.entity.Customer;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.RepaymentSchedule;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 public class LoanMapper {
 
     public static LoanDto entityToDto(Loan entity, LoanDto dto) {
@@ -18,6 +22,7 @@ public class LoanMapper {
         dto.setLoanPaymentStatus(entity.getLoanPaymentStatus());
         dto.setDisbursementDate(entity.getDisbursementDate());
         dto.setDisbursementAmount(entity.getDisbursementAmount());
+        dto.setLoanReferenceCode(entity.getLoanReferenceCode());
         return dto;
     }
 
@@ -32,6 +37,11 @@ public class LoanMapper {
         entity.setPrincipal(dto.getPrincipal());
         entity.setDisbursementDate(dto.getDisbursementDate());
         entity.setDisbursementAmount(dto.getDisbursementAmount());
+        entity.setLoanReferenceCode(generateLoanReferenceCode());
         return entity;
+    }
+
+    private static String generateLoanReferenceCode() {
+        return "L-"+ LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)+"-"+ UUID.randomUUID().toString().substring(0,8);
     }
 }

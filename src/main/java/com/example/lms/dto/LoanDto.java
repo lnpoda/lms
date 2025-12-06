@@ -18,6 +18,8 @@ public class LoanDto {
 
     private BigDecimal principal;
 
+    private String loanReferenceCode;
+
     private String type;
 
     private LoanPaymentStatus loanPaymentStatus;

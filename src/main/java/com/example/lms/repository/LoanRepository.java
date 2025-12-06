@@ -11,4 +11,6 @@ public interface LoanRepository extends CrudRepository<Loan, Long> {
     public List<Loan> findByCustomerId(Long customerId);
 
     public Optional<Loan> findByLoanApplicationApplicationReferenceCode(String applicationReferenceCode);
+
+    public Optional<Loan> findByLoanReferenceCode(String loanReferenceCode);
 }
