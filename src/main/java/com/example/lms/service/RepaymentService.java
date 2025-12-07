@@ -1,6 +1,7 @@
 package com.example.lms.service;
 
 import com.example.lms.constants.LoanPaymentStatus;
+import com.example.lms.dto.LoanRepaymentDto;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.entity.RepaymentSchedule;
@@ -83,7 +84,9 @@ public class RepaymentService {
 
     }
 
-    public void performLoanRepayment(String loanReferenceCode, BigDecimal repaymentAmount) {
+    public void performLoanRepayment(LoanRepaymentDto loanRepaymentDto) {
+        String loanReferenceCode = loanRepaymentDto.getLoanReferenceCode();
+        BigDecimal repaymentAmount = loanRepaymentDto.getRepaymentAmount();
         Loan loan = loanRepository.findByLoanReferenceCode(loanReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
 

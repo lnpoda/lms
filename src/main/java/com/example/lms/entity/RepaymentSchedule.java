@@ -10,7 +10,9 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +25,10 @@ public class RepaymentSchedule {
     private Long id;
 
     @MapKeyColumn(name = "due_date")
+//    @CollectionTable(
+//            name = "repayment_schedule_entries",
+//            joinColumns = @JoinColumn(name = "repayment_schedule_id")
+//    )
     @ElementCollection
     Map<LocalDate, RepaymentScheduleEntry> repaymentSchedule = new HashMap<>();
 

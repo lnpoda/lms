@@ -14,7 +14,13 @@ public class RepaymentScheduleEntryDto {
 
     private BigDecimal principal;
 
-    private Integer interest;
+    private BigDecimal interest;
+
+    private BigDecimal principalPaymentAmount;
+
+    private BigDecimal interestPaymentAmount;
+
+    private BigDecimal totalPaymentAmount;
 
     private LoanPaymentStatus loanPaymentStatus;
 }
