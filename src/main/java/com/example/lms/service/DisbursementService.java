@@ -47,7 +47,7 @@ public class DisbursementService {
                 RoundingMode.HALF_EVEN);
     }
 
-    private LocalDateTime calculateDisbursementDate(LoanApplication loanApplication){
+    public LocalDateTime calculateDisbursementDate(LoanApplication loanApplication){
         if ((loanApplication.getLoanApplicationStatus() == LoanApplicationStatus.APPROVED)) {
             return loanApplication.getReviewedAt().plusDays(5);
         }

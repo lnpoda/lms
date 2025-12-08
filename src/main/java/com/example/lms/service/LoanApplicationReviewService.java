@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,9 +127,13 @@ public class LoanApplicationReviewService {
         loanDto.setCustomerDto(loanApplicationReviewDto.getLoanApplicationRequestDto().getCustomerDto());
         loanDto.setPrincipal(loanApplicationReviewDto.getLoanApplicationRequestDto().getPrincipal());
 
-        RepaymentScheduleDto repaymentScheduleDto = new RepaymentScheduleDto();
-//        repaymentScheduleDto.setPrincipal(calculatePrincipal(loanApplication)); //(loanApplicationReviewDto.getLoanApplicationResponseDto().getPrincipal());
-//        repaymentScheduleDto.setLoanPaymentStatus(LoanPaymentStatus.PENDING);
+
+        RepaymentSchedule repaymentSchedule = new RepaymentSchedule();
+        repaymentScheduleRepository.save(repaymentSchedule);
+
+        RepaymentScheduleDto repaymentScheduleDto = RepaymentScheduleMapper.entityToDto(repaymentSchedule,
+                new RepaymentScheduleDto());
+
         loanApplicationReviewDto.setRepaymentScheduleDto(repaymentScheduleDto);
 
         loanDto.setRepaymentScheduleDto(repaymentScheduleDto);
@@ -136,9 +141,6 @@ public class LoanApplicationReviewService {
 
         Customer customer = getCustomerEntityFromReviewDto(loanApplicationReviewDto);
 
-        RepaymentSchedule repaymentSchedule = RepaymentScheduleMapper.dtoToEntity(repaymentScheduleDto,
-                new RepaymentSchedule());
-        repaymentScheduleRepository.save(repaymentSchedule);
 
         if (loanApplication.getLoan() == null) {
             Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
@@ -149,7 +151,14 @@ public class LoanApplicationReviewService {
 
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.APPROVED);
 
+        LocalDateTime disbursementDate = disbursementService.calculateDisbursementDate(loanApplication);
+        loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode)
+                        .orElseThrow(()->new ResourceNotFoundException("loan",
+                                "applicationReferenceCode",
+                                applicationReferenceCode))
+                .setDisbursementDate(disbursementDate);
         disbursementService.setDisbursementAmountFromApplicationReferenceCode(applicationReferenceCode);
+        repaymentService.generateAndSaveRepaymentSchedule(applicationReferenceCode);
     }
 
     public void rejectLoanApplication(String applicationReferenceCode) {
