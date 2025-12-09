@@ -15,8 +15,8 @@ public class LoanController {
     private final RepaymentService repaymentService;
 
     @PostMapping("/repayment")
-    public ResponseEntity<HttpStatus> performRepayment(@RequestBody LoanRepaymentDto loanRepaymentDto) {
-        repaymentService.performLoanRepayment(loanRepaymentDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> performRepayment(@RequestBody LoanRepaymentDto loanRepaymentDto) {
+        String loanReferenceCode = repaymentService.performLoanRepayment(loanRepaymentDto);
+        return new ResponseEntity<>(loanReferenceCode, HttpStatus.OK);
     }
 }

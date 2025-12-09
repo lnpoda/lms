@@ -63,7 +63,7 @@ public class RepaymentService {
         LocalDateTime endDate = loanApplication.getLoan().getDisbursementDate()
                 .plusMonths(loanApplication.getTermMonths());
 
-         return Stream.iterate(startDate, date->date.plusDays(30))
+         return Stream.iterate(startDate, date->!date.isAfter(endDate), date->date.plusDays(30))
                 .filter(date->!date.isAfter(endDate))
                 .collect(Collectors.toMap(LocalDateTime::toLocalDate,
                         date-> {
@@ -83,13 +83,14 @@ public class RepaymentService {
 
     }
 
-    public void performLoanRepayment(LoanRepaymentDto loanRepaymentDto) {
+    public String performLoanRepayment(LoanRepaymentDto loanRepaymentDto) {
         String loanReferenceCode = loanRepaymentDto.getLoanReferenceCode();
         BigDecimal repaymentAmount = loanRepaymentDto.getRepaymentAmount();
         Loan loan = loanRepository.findByLoanReferenceCode(loanReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
 
         updateLastRepaymentScheduleEntry(loan.getRepaymentSchedule(), repaymentAmount);
+        return loanReferenceCode;
     }
 
     public LoanPaymentStatus getLoanPaymentStatus(LocalDateTime date, LocalDateTime disbursementDate) {

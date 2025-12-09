@@ -29,9 +29,9 @@ public class LoanApplicationReviewController {
     }
 
     @PostMapping("{applicationReferenceCode}/approve")
-    public ResponseEntity<HttpStatus> approveLoanApplication(@PathVariable String applicationReferenceCode) {
-        loanApplicationReviewService.approveLoanApplication(applicationReferenceCode);
-        return new ResponseEntity<>(HttpStatus.CREATED); //TODO: make ResponseEntity carry ResponseDto
+    public ResponseEntity<String> approveLoanApplication(@PathVariable String applicationReferenceCode) {
+        String loanReferenceCode = loanApplicationReviewService.approveLoanApplication(applicationReferenceCode);
+        return new ResponseEntity<>(loanReferenceCode, HttpStatus.CREATED); //TODO: make ResponseEntity carry ResponseDto
     }
 
     @PostMapping("{applicationReferenceCode}/reject")

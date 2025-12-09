@@ -112,7 +112,7 @@ public class LoanApplicationReviewService {
         return eligibilityFailures;
     }
 
-    public void approveLoanApplication(String applicationReferenceCode) {
+    public String approveLoanApplication(String applicationReferenceCode) {
 
         LoanApplication loanApplication = loanApplicationRepository
                 .findByApplicationReferenceCode(applicationReferenceCode)
@@ -159,6 +159,9 @@ public class LoanApplicationReviewService {
                 .setDisbursementDate(disbursementDate);
         disbursementService.setDisbursementAmountFromApplicationReferenceCode(applicationReferenceCode);
         repaymentService.generateAndSaveRepaymentSchedule(applicationReferenceCode);
+
+        return loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode).get()
+                .getLoanReferenceCode();
     }
 
     public void rejectLoanApplication(String applicationReferenceCode) {
