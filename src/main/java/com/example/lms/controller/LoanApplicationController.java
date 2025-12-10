@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/loanApplication")
@@ -26,5 +28,13 @@ public class LoanApplicationController {
     public ResponseEntity<LoanApplicationStatus> getLoanApplicationStatus(@PathVariable String applicationReferenceCode) {
         LoanApplicationStatus loanApplicationStatus = loanApplicationService.getLoanApplicationStatusFromApplicationReferenceCode(applicationReferenceCode);
         return new ResponseEntity<>(loanApplicationStatus, HttpStatus.OK);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<LoanApplicationResponseDto>> getLoanApplicationsWithStatus(@RequestParam String loanApplicationStatus) {
+        List<LoanApplicationResponseDto> loanApplications = loanApplicationService
+                .getLoanApplicationsWithStatuses(List.of(LoanApplicationStatus.valueOf(loanApplicationStatus
+                        .toUpperCase())));
+        return new ResponseEntity<>(loanApplications, HttpStatus.OK);
     }
 }

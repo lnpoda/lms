@@ -12,6 +12,8 @@ import com.example.lms.repository.LoanApplicationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class LoanApplicationService {
@@ -41,6 +43,14 @@ public class LoanApplicationService {
         }
         return loanApplicationStatus;
     }
+
+    public List<LoanApplicationResponseDto> getLoanApplicationsWithStatuses(List<LoanApplicationStatus> loanApplicationStatuses) {
+        return loanApplicationRepository.findByLoanApplicationStatusIn(loanApplicationStatuses)
+                .stream()
+                .map(loanApplication->LoanApplicationMapper.entityToDto(loanApplication, new LoanApplicationResponseDto()))
+                .toList();
+    }
+
 
     private LoanApplicationResponseDto getLoanApplicationFromApplicationReferenceCode(String loanApplicationReferenceCode) {
         LoanApplication loanApplication = loanApplicationRepository.findByApplicationReferenceCode(loanApplicationReferenceCode)

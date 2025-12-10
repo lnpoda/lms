@@ -1,12 +1,14 @@
 package com.example.lms.service;
 
 import com.example.lms.constants.LoanPaymentStatus;
+import com.example.lms.dto.LoanDto;
 import com.example.lms.dto.LoanRepaymentDto;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.entity.RepaymentSchedule;
 import com.example.lms.entity.RepaymentScheduleEntry;
 import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.mapper.LoanMapper;
 import com.example.lms.repository.LoanApplicationRepository;
 import com.example.lms.repository.LoanRepository;
 import com.example.lms.repository.RepaymentScheduleRepository;
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,6 +84,13 @@ public class RepaymentService {
                         }));
 
 
+    }
+
+    public List<LoanDto> getLoansWithPaymentStatuses(LoanPaymentStatus loanPaymentStatus) {
+        return loanRepository.findByLoanPaymentStatus(loanPaymentStatus)
+                .stream()
+                .map(loan -> LoanMapper.entityToDto(loan, new LoanDto()))
+                .toList();
     }
 
     public String performLoanRepayment(LoanRepaymentDto loanRepaymentDto) {
