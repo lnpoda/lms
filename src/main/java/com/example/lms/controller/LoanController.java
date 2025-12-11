@@ -3,6 +3,7 @@ package com.example.lms.controller;
 import com.example.lms.constants.LoanPaymentStatus;
 import com.example.lms.dto.LoanDto;
 import com.example.lms.dto.LoanRepaymentDto;
+import com.example.lms.dto.RepaymentScheduleDto;
 import com.example.lms.service.RepaymentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,11 @@ public class LoanController {
         List<LoanDto> loans = repaymentService
                 .getLoansWithPaymentStatuses(LoanPaymentStatus.valueOf(loanPaymentStatus));
         return new ResponseEntity<>(loans, HttpStatus.OK);
+    }
+
+    @GetMapping("/repayments/{loanReferenceCode}")
+    public ResponseEntity<RepaymentScheduleDto> getRepaymentSchedule(@PathVariable String loanReferenceCode) {
+        RepaymentScheduleDto repaymentScheduleDto = repaymentService.getRepaymentScheduleFromLoanReferenceCode(loanReferenceCode);
+        return new ResponseEntity<>(repaymentScheduleDto, HttpStatus.OK);
     }
 }

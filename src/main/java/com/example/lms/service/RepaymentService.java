@@ -3,12 +3,14 @@ package com.example.lms.service;
 import com.example.lms.constants.LoanPaymentStatus;
 import com.example.lms.dto.LoanDto;
 import com.example.lms.dto.LoanRepaymentDto;
+import com.example.lms.dto.RepaymentScheduleDto;
 import com.example.lms.entity.Loan;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.entity.RepaymentSchedule;
 import com.example.lms.entity.RepaymentScheduleEntry;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.LoanMapper;
+import com.example.lms.mapper.RepaymentScheduleMapper;
 import com.example.lms.repository.LoanApplicationRepository;
 import com.example.lms.repository.LoanRepository;
 import com.example.lms.repository.RepaymentScheduleRepository;
@@ -82,8 +84,6 @@ public class RepaymentService {
 
                     return repaymentScheduleEntry;
                         }));
-
-
     }
 
     public List<LoanDto> getLoansWithPaymentStatuses(LoanPaymentStatus loanPaymentStatus) {
@@ -119,6 +119,25 @@ public class RepaymentService {
                 .findFirst()
 
                 .ifPresent(entry-> applyRepaymentToEntry(entry, updateAmount) );
+    }
+
+    public List<LocalDate> getRepaymentDates(String loanReferenceCode) {
+        Loan loan = loanRepository.findByLoanReferenceCode(loanReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
+        RepaymentSchedule repaymentSchedule = loan.getRepaymentSchedule();
+        return repaymentSchedule.getRepaymentSchedule().values().stream()
+                .map(RepaymentScheduleEntry::getDueDate)
+                .toList();
+    }
+
+
+    public RepaymentScheduleDto getRepaymentScheduleFromLoanReferenceCode(String loanReferenceCode) {
+
+        Loan loan = loanRepository.findByLoanReferenceCode(loanReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
+        RepaymentSchedule repaymentSchedule = loan.getRepaymentSchedule();
+        return RepaymentScheduleMapper.entityToDto(repaymentSchedule,
+                new RepaymentScheduleDto());
     }
 
     private void applyRepaymentToEntry(RepaymentScheduleEntry entry, BigDecimal totalUpdateAmount) {
