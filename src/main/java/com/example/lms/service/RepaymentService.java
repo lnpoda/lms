@@ -53,6 +53,11 @@ public class RepaymentService {
         } else {
             RepaymentSchedule repaymentSchedule = new RepaymentSchedule();
             repaymentSchedule.setRepaymentSchedule(repaymentScheduleEntries);
+            Loan loan = loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode)
+                            .orElseThrow(()-> new ResourceNotFoundException("loan",
+                                    "applicationReferenceCode",
+                                    applicationReferenceCode));
+            repaymentSchedule.setLoan(loan);
             repaymentScheduleRepository.save(repaymentSchedule);
         }
 

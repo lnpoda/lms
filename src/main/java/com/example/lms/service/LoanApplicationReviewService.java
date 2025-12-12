@@ -145,6 +145,7 @@ public class LoanApplicationReviewService {
         if (loanApplication.getLoan() == null) {
             Loan loan = LoanMapper.dtoToEntity(loanDto, new Loan(), customer, repaymentSchedule);
             loan.setLoanApplication(loanApplication);
+            repaymentSchedule.setLoan(loan);
             loanRepository.save(loan);
             loanApplication.setLoan(loan);
         }
@@ -159,6 +160,20 @@ public class LoanApplicationReviewService {
                 .setDisbursementDate(disbursementDate);
         disbursementService.setDisbursementAmountFromApplicationReferenceCode(applicationReferenceCode);
         repaymentService.generateAndSaveRepaymentSchedule(applicationReferenceCode);
+
+        Loan loan = loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loan",
+                        "applicationReferenceCode",
+                        applicationReferenceCode));
+
+        loan.getRepaymentSchedule().setRepaymentSchedule(repaymentScheduleRepository
+                .findByLoanLoanApplicationApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("repaymentSchedule",
+                        "applicationReferenceCode",
+                        applicationReferenceCode))
+                .getRepaymentSchedule());
+
+//        repaymentSchedule.setLoan(loan);
 
         return loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode).get()
                 .getLoanReferenceCode();
