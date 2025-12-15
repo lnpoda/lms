@@ -7,8 +7,10 @@ import com.example.lms.repository.LoanRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class DueDateAlertService {
     private final NotificationService notificationService;
 
     @Scheduled(cron = "0 * * * * *")
+    @Transactional
     public void scanForLoansAndAlert() {
         loanRepository.findAll()
                 .forEach(this::alertForLoan);
@@ -46,7 +49,7 @@ public class DueDateAlertService {
 
     private List<RepaymentScheduleEntry> scanRepaymentScheduleForUpcomingDueDate(RepaymentSchedule repaymentSchedule) {
         return repaymentSchedule.getRepaymentSchedule().values().stream()
-                .filter(entry->LocalDate.now().isAfter(entry.getDueDate().minusDays(10)))
+                .filter(entry-> LocalDateTime.now().isAfter(entry.getDueDate().minusDays(10)))
                 .toList();
     }
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,13 +20,13 @@ public class RepaymentSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @MapKeyColumn(name = "due_date")
+    @MapKeyColumn(name = "entry_due_date")
 //    @CollectionTable(
 //            name = "repayment_schedule_entries",
 //            joinColumns = @JoinColumn(name = "repayment_schedule_id")
 //    )
     @ElementCollection
-    Map<LocalDate, RepaymentScheduleEntry> repaymentSchedule = new HashMap<>();
+    Map<LocalDateTime, RepaymentScheduleEntry> repaymentSchedule = new HashMap<>();
 
     @OneToOne
     private Loan loan;

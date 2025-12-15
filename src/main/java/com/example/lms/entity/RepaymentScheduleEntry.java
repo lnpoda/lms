@@ -9,14 +9,15 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter @Setter
 @Embeddable
 public class RepaymentScheduleEntry {
 
-    @Column(name = "entry_due_date")
-    private LocalDate dueDate;
+    @Column(name = "due_date")
+    private LocalDateTime dueDate;
 
     private BigDecimal principal;
 

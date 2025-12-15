@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class RepaymentService {
         Optional<RepaymentSchedule> repaymentScheduleOptional = repaymentScheduleRepository
                 .findByLoanLoanApplicationApplicationReferenceCode(applicationReferenceCode);
 
-        Map<LocalDate, RepaymentScheduleEntry> repaymentScheduleEntries =
+        Map<LocalDateTime, RepaymentScheduleEntry> repaymentScheduleEntries =
                 generateRepaymentScheduleEntries(applicationReferenceCode);
 
         if (repaymentScheduleOptional.isPresent()) {
@@ -63,7 +62,7 @@ public class RepaymentService {
 
     }
 
-    public Map<LocalDate, RepaymentScheduleEntry> generateRepaymentScheduleEntries(String applicationReferenceCode) {
+    public Map<LocalDateTime, RepaymentScheduleEntry> generateRepaymentScheduleEntries(String applicationReferenceCode) {
         LoanApplication loanApplication = loanApplicationRepository.findByApplicationReferenceCode(applicationReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loanApplication",
                         "applicationReferenceCode",
@@ -75,13 +74,18 @@ public class RepaymentService {
 
          return Stream.iterate(startDate, date->!date.isAfter(endDate), date->date.plusDays(30))
                 .filter(date->!date.isAfter(endDate))
-                .collect(Collectors.toMap(LocalDateTime::toLocalDate,
+                .collect(Collectors.toMap(date->date,
                         date-> {
                     RepaymentScheduleEntry repaymentScheduleEntry = new RepaymentScheduleEntry();
+
                     repaymentScheduleEntry.setPrincipalPaymentAmount(loanApplication.getPrincipal()
                             .divide(BigDecimal.valueOf(loanApplication.getTermMonths()), RoundingMode.HALF_EVEN));
+
                     repaymentScheduleEntry.setInterestPaymentAmount(loanApplication.getPrincipal()
                             .multiply(BigDecimal.valueOf(0.05)));
+
+                    repaymentScheduleEntry.setDueDate(date);
+
                     repaymentScheduleEntry.setLoanPaymentStatus(getLoanPaymentStatus(date,
                             loanApplication
                                     .getLoan()
@@ -126,7 +130,7 @@ public class RepaymentService {
                 .ifPresent(entry-> applyRepaymentToEntry(entry, updateAmount) );
     }
 
-    public List<LocalDate> getRepaymentDates(String loanReferenceCode) {
+    public List<LocalDateTime> getRepaymentDates(String loanReferenceCode) {
         Loan loan = loanRepository.findByLoanReferenceCode(loanReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
         RepaymentSchedule repaymentSchedule = loan.getRepaymentSchedule();
@@ -158,7 +162,7 @@ public class RepaymentService {
             } else {
                 // if the remaining amount is less than the due interest payment, and ...
                 // if current date is past due date, mark the entry as 'overdue', else mark as 'pending'
-                if (entry.getDueDate().isBefore(LocalDate.now())) {
+                if (entry.getDueDate().isBefore(LocalDateTime.now())) {
                     entry.setLoanPaymentStatus(LoanPaymentStatus.OVERDUE);
                 } else {
                     // if the current date is before the due date, mark the entry as 'pending'

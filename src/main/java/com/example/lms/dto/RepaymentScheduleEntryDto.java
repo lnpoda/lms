@@ -5,12 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter @Setter
 public class RepaymentScheduleEntryDto {
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     private BigDecimal principal;
 
