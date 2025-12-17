@@ -24,4 +24,32 @@ public class ReportService {
         result.put("activeLoans", activeLoans);
         return result;
     }
+
+    public String generateLoanReportCSV() {
+        Map<String, List<Loan>> report = generateLoanReport();
+        StringBuilder stringBuilder = new StringBuilder();
+        // Headers
+        stringBuilder.append("Category, LoanReferenceCode, Principal, PaymentStatus");
+
+        report.forEach((loanCategory, loans) -> {
+            loans.forEach((loan -> stringBuilder.append(generateCSVForLoan(loanCategory, loan))));
+        });
+
+        return stringBuilder.toString();
+    }
+
+    private String generateCSVForLoan(String loanCategory, Loan loan) {
+
+        return loanCategory + ","
+                + loan.getLoanReferenceCode() + ","
+                + loan.getPrincipal() + ","
+                + loan.getLoanPaymentStatus();
+    }
+
+    public String generateLoanReportPDF() {
+        Map<String, List<Loan>> report = generateLoanReport();
+        return null;
+    }
+
+    private void PDFGenerator() {}
 }
