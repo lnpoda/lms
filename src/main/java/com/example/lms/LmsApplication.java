@@ -44,6 +44,7 @@ public class LmsApplication {
 			customerRepository.save(customer2);
 
 			reportService.generateAndSaveLoanReportPDF();
+			reportService.generateAndSaveLoanReportCSV("./reports/loan_report.csv");
 		};
 
 	}

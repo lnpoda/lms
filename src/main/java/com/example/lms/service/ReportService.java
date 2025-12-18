@@ -12,6 +12,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,23 @@ public class ReportService {
         });
 
         return stringBuilder.toString();
+    }
+
+    public void generateAndSaveLoanReportCSV(String filepath) {
+        String csvContent = generateLoanReportCSV();
+
+        Path path = Paths.get(filepath);
+        try {
+            Files.createDirectories(path.getParent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Files.writeString(path, csvContent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String generateCSVForLoan(String loanCategory, Loan loan) {
