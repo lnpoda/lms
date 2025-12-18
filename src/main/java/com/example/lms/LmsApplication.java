@@ -2,6 +2,7 @@ package com.example.lms;
 
 import com.example.lms.entity.Customer;
 import com.example.lms.repository.CustomerRepository;
+import com.example.lms.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +19,9 @@ public class LmsApplication {
 
 	@Autowired
 	CustomerRepository customerRepository;
+
+	@Autowired
+	ReportService reportService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LmsApplication.class, args);
@@ -38,6 +42,8 @@ public class LmsApplication {
 
 			customerRepository.save(customer1);
 			customerRepository.save(customer2);
+
+			reportService.generateAndSaveLoanReportPDF();
 		};
 
 	}
