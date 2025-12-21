@@ -4,6 +4,8 @@ package com.example.lms.entity;
 import com.example.lms.constants.LoanPaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,5 +31,6 @@ public class RepaymentScheduleEntry {
 
     private BigDecimal totalPaymentAmount;
 
+    @Enumerated(EnumType.STRING)
     private LoanPaymentStatus loanPaymentStatus;
 }

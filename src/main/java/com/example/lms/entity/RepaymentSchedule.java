@@ -21,10 +21,10 @@ public class RepaymentSchedule {
     private Long id;
 
     @MapKeyColumn(name = "entry_due_date")
-//    @CollectionTable(
-//            name = "repayment_schedule_entries",
-//            joinColumns = @JoinColumn(name = "repayment_schedule_id")
-//    )
+    @CollectionTable(
+            name = "repayment_schedule_entries",
+            joinColumns = @JoinColumn(name = "repayment_schedule_id")
+    )
     @ElementCollection
     Map<LocalDateTime, RepaymentScheduleEntry> repaymentSchedule = new HashMap<>();
 

@@ -29,6 +29,7 @@ public class Loan {
     @Column
     private String type;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private LoanPaymentStatus loanPaymentStatus;
 
