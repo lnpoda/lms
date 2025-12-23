@@ -32,10 +32,12 @@ dependencies {
 	implementation 'com.h2database:h2:2.4.240'
 	// https://mvnrepository.com/artifact/com.itextpdf/itext7-core
 	implementation 'com.itextpdf:itext7-core:9.4.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
