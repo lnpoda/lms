@@ -5,7 +5,6 @@ import com.example.lms.dto.RepaymentScheduleEntryDto;
 import com.example.lms.entity.RepaymentSchedule;
 import com.example.lms.entity.RepaymentScheduleEntry;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

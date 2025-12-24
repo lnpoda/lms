@@ -5,10 +5,10 @@ spring:
   application:
     name: lms
 
-  security:
-    user:
-      name: "loanuser"
-      password: "12345"
+#  security:
+#    user:
+#      name: "loanuser"
+#      password: "12345"
 
   datasource:
     url: jdbc:h2:mem:testdb
