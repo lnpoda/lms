@@ -22,7 +22,7 @@ public class LMSUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         LMSUser LMSUser = LMSUserRepository.findByEmail(username)
                 .orElseThrow(()->new ResourceNotFoundException("LMSUser", "email", username));
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(LMSUser.getRole()));
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(LMSUser.getRole().getRole()));
 
         return new org.springframework.security.core.userdetails.User(username, LMSUser.getPassword(), authorities);
     }

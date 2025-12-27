@@ -13,10 +13,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(requests->requests.requestMatchers("/customer/**").permitAll()
-                .requestMatchers("/loan/**").permitAll()
-                .requestMatchers("/loanApplication/**").permitAll()
-                .requestMatchers("/reports/**").permitAll()
+        http.authorizeHttpRequests(requests->requests.requestMatchers("/customer/**").hasAnyRole("APPLICANT", "ADMIN")
+                .requestMatchers("/loan/**").hasAnyRole("APPLICANT", "ADMIN")
+                .requestMatchers("/loanApplication/**").hasRole("ADMIN")
+                .requestMatchers("/reports/**").hasRole("ADMIN")
                 .requestMatchers("/h2-console/**", "/error").permitAll());
         http.csrf(config->config.disable());
         http.cors(config->config.disable());

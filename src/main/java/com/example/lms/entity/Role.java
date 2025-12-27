@@ -6,20 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
 @Entity
-public class LMSUser {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
+    @OneToMany(mappedBy = "role")
+    private Set<LMSUser> lmsUser;
 
-    private String password;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Role role;
+    private String role;
 }
