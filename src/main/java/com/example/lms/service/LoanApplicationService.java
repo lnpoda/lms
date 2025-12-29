@@ -10,10 +10,12 @@ import com.example.lms.mapper.LoanApplicationMapper;
 import com.example.lms.repository.CustomerRepository;
 import com.example.lms.repository.LoanApplicationRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class LoanApplicationService {
@@ -24,6 +26,7 @@ public class LoanApplicationService {
     public LoanApplicationResponseDto submitLoanApplication(LoanApplicationRequestDto loanApplicationRequestDto) {
         Customer customer = customerRepository.findByMobileNumber(loanApplicationRequestDto.getCustomerDto().getMobileNumber())
                 .orElseThrow(()->new ResourceNotFoundException("customer", "mobileNumber", loanApplicationRequestDto.getCustomerDto().getMobileNumber()));
+        log.info("submitting loan application for customer: {}", loanApplicationRequestDto.getCustomerDto().getEmail());
 
         // TODO: verify if similar loan application exists before submission
         LoanApplication loanApplication = LoanApplicationMapper.dtoToEntity(loanApplicationRequestDto,
@@ -32,6 +35,7 @@ public class LoanApplicationService {
         loanApplication.setCustomer(customer);
         loanApplication.setLoanApplicationStatus(LoanApplicationStatus.SUBMITTED);
         LoanApplication savedLoanApplication = loanApplicationRepository.save(loanApplication);
+        log.info("saved loan application with reference code: {}", savedLoanApplication.getApplicationReferenceCode());
         return LoanApplicationMapper.entityToDto(savedLoanApplication, new LoanApplicationResponseDto());
     }
 

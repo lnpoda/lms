@@ -15,6 +15,7 @@ import com.example.lms.repository.LoanApplicationRepository;
 import com.example.lms.repository.LoanRepository;
 import com.example.lms.repository.RepaymentScheduleRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class RepaymentService {
@@ -46,10 +48,12 @@ public class RepaymentService {
                 generateRepaymentScheduleEntries(applicationReferenceCode);
 
         if (repaymentScheduleOptional.isPresent()) {
+            log.info("repayment schedule found for loan application {}, skipping creation..", applicationReferenceCode);
             RepaymentSchedule repaymentSchedule = repaymentScheduleOptional.get();
             repaymentSchedule.setRepaymentSchedule(repaymentScheduleEntries);
             repaymentScheduleRepository.save(repaymentSchedule);
         } else {
+            log.info("generating repayment schedule for loan application {}", applicationReferenceCode);
             RepaymentSchedule repaymentSchedule = new RepaymentSchedule();
             repaymentSchedule.setRepaymentSchedule(repaymentScheduleEntries);
             Loan loan = loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode)
@@ -57,6 +61,7 @@ public class RepaymentService {
                                     "applicationReferenceCode",
                                     applicationReferenceCode));
             repaymentSchedule.setLoan(loan);
+            log.info("repaymentSchedule being created for loan {}", loan.getLoanReferenceCode());
             repaymentScheduleRepository.save(repaymentSchedule);
         }
 
@@ -109,6 +114,7 @@ public class RepaymentService {
                 .orElseThrow(()->new ResourceNotFoundException("loan", "loanReferenceCode", loanReferenceCode));
 
         updateLastRepaymentScheduleEntry(loan.getRepaymentSchedule(), repaymentAmount);
+        log.info("repayment of {} being performed for loan {}", loanRepaymentDto.getRepaymentAmount(), loanRepaymentDto.getLoanReferenceCode());
         return loanReferenceCode;
     }
 
@@ -154,7 +160,6 @@ public class RepaymentService {
         BigDecimal netInterestPaymentAmount = totalUpdateAmount.subtract(entry.getPrincipalPaymentAmount());
         // if the remaining amount is > 0, calculate towards interest due payment
         if (netInterestPaymentAmount.compareTo(BigDecimal.ZERO) == 1) {
-            // TODO: add the case for when paid amount is greater than interest due, and add towards the next payment.
 
             // if the remaining amount is more than or equal to the due interest payment, mark the entry as paid.
             if (netInterestPaymentAmount.subtract(entry.getInterestPaymentAmount()).compareTo(BigDecimal.ZERO) >= 0 ) {

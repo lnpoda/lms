@@ -20,6 +20,7 @@ import com.example.lms.repository.LoanRepository;
 import com.example.lms.repository.RepaymentScheduleRepository;
 import com.example.lms.utils.business.LoanEligibilityRules;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class LoanApplicationReviewService {
@@ -62,6 +64,7 @@ public class LoanApplicationReviewService {
         LoanApplication loanApplication = loanApplicationRepository
                 .findByApplicationReferenceCode(applicationReferenceCode)
                 .orElseThrow(()->new ResourceNotFoundException("loanApplication","applicationReferenceCode", applicationReferenceCode));
+        log.info("reviewing loan eligibility for loan application: {}", applicationReferenceCode);
 
         LoanApplicationReviewDto loanApplicationReviewDto = LoanApplicationReviewMapper
                 .loanApplicationEntityToReviewDto(loanApplication, new LoanApplicationReviewDto());
@@ -75,6 +78,7 @@ public class LoanApplicationReviewService {
         LoanApplication loanApplication =
                 LoanApplicationReviewMapper
                 .reviewDtoToLoanApplicationEntity(loanApplicationReviewDto, new LoanApplication(), customer, null);
+        log.info("getting loan eligibility for application: {}", loanApplication.getApplicationReferenceCode());
         return getLoanEligibilityFailures(loanApplication).isEmpty();
     }
 
@@ -86,6 +90,8 @@ public class LoanApplicationReviewService {
         if (annualIncome.compareTo(annualIncomeThreshold) < 0) {
             eligibilityFailures.add("Annual income insufficient.");
         }
+        log.info("annual income of customer {}: {}", loanApplication.getCustomer().getEmail(), annualIncome);
+
         Integer activeLoanApplicationsThreshold = loanEligibilityRules.getActiveLoanApplicationsThreshold();
         Long customerId = loanApplication.getCustomer().getId();
         Integer numActiveLoanApplications = loanApplicationRepository.findByCustomerId(customerId)
@@ -97,6 +103,7 @@ public class LoanApplicationReviewService {
         if (numActiveLoanApplications > activeLoanApplicationsThreshold) {
             eligibilityFailures.add("Reached maximum number of active loan applications.");
         }
+        log.info("active loan applications for customer {}: {}", loanApplication.getCustomer().getEmail(), numActiveLoanApplications);
 
         Integer activeLoansThreshold = loanEligibilityRules.getActiveLoansThreshold();
         Integer numActiveLoans = loanRepository.findByCustomerId(customerId)
@@ -108,6 +115,7 @@ public class LoanApplicationReviewService {
         if (numActiveLoans > activeLoansThreshold) {
             eligibilityFailures.add("Reached maximum number of active loans.");
         }
+        log.info("active loans for application {}: {}",loanApplication.getApplicationReferenceCode(), numActiveLoans);
 
         return eligibilityFailures;
     }
@@ -174,6 +182,7 @@ public class LoanApplicationReviewService {
                 .getRepaymentSchedule());
 
 //        repaymentSchedule.setLoan(loan);
+        log.info("loan application {} being approved for customer {}", loanApplicationReviewDto.getLoanApplicationResponseDto().getApplicationReferenceCode(), customer.getEmail());
 
         return loanRepository.findByLoanApplicationApplicationReferenceCode(applicationReferenceCode).get()
                 .getLoanReferenceCode();
@@ -190,6 +199,7 @@ public class LoanApplicationReviewService {
                 .loanApplicationEntityToReviewDto(loanApplication, new LoanApplicationReviewDto());
 
 
+        log.info("loan application {} being rejected for customer {}", loanApplication.getApplicationReferenceCode(), loanApplication.getCustomer().getEmail());
         respondToLoanApplication(loanApplicationReviewDto, LoanApplicationStatus.REJECTED);
     }
 
