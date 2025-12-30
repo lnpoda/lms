@@ -22,6 +22,6 @@ public class LoanApplicationReviewedEventListener {
         loanApplication.setReviewedAt(LocalDateTime.now());
         loanApplication.setReviewedBy("anonymousReviewer");
         loanApplicationRepository.save(loanApplication);
-        notificationService.notifyCustomer("loan application reviewed at "+ loanApplication.getReviewedAt()+" Current status: "+loanApplication.getLoanApplicationStatus());
+        notificationService.notifyCustomer(loanApplication.getCustomer(), "Loan Application"+loanApplication.getApplicationReferenceCode()+" Reviewed", "loan application reviewed at "+ loanApplication.getReviewedAt()+" Current status: "+loanApplication.getLoanApplicationStatus());
     }
 }

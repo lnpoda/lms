@@ -5,14 +5,15 @@ import com.example.lms.entity.RepaymentSchedule;
 import com.example.lms.entity.RepaymentScheduleEntry;
 import com.example.lms.repository.LoanRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @AllArgsConstructor
 @Component
 public class DueDateAlertService {
@@ -31,11 +32,15 @@ public class DueDateAlertService {
     public void alertForLoan(Loan loan) {
         List<RepaymentScheduleEntry> upcomingDues = checkUpcomingDueDatesForLoan(loan);
         if (!upcomingDues.isEmpty()) {
-            upcomingDues.forEach(entry->notificationService
-                            .notifyCustomer("You have an upcoming payment due on "+entry.getDueDate()
-                                    +" for the loan with the reference code "+loan.getLoanReferenceCode()));
+            upcomingDues.forEach(entry-> {
+                notificationService
+                        .notifyCustomer(loan.getCustomer(), "Upcoming Payment Due - " + entry.getDueDate(), "You have an upcoming payment due on " + entry.getDueDate()
+                                + " for the loan with the reference code " + loan.getLoanReferenceCode());
+
+                log.info("implemented alertForLoan... sent due date alert to {}", loan.getCustomer().getEmail());
+            });
         }
-        System.out.println("implemented alertForLoan................");
+
     }
 
     private List<RepaymentScheduleEntry> checkUpcomingDueDatesForLoan(Loan loan) {
