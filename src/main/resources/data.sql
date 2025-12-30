@@ -58,11 +58,11 @@
 --    (2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1500.00, 300.00, 300.00, 1500.00, 1800.00, 'OVERDUE');
 
 INSERT INTO customer (id, name, email, mobile_number) VALUES
-(1, 'Alice Johnson', 'bijan85426@icousd.com', '5551111'),
-(2, 'Bob Smith', 'bijan85426@icousd.com', '5552222'),
-(3, 'Charlie Davis', 'bijan85426@icousd.com', '5553333'),
-(4, 'Diana Prince', 'bijan85426@icousd.com', '5554444'),
-(5, 'Ethan Hunt', 'bijan85426@icousd.com', '5555555');
+(1, 'Alice Johnson', 'alice@example.com', '5551111'),
+(2, 'Bob Smith', 'bob@example.com', '5552222'),
+(3, 'Charlie Davis', 'charlie@example.com', '5553333'),
+(4, 'Diana Prince', 'diana@example.com', '5554444'),
+(5, 'Ethan Hunt', 'ethan@example.com', '5555555');
 
 
 INSERT INTO loan_application (
@@ -137,6 +137,7 @@ INSERT INTO repayment_schedule_entries (
     loan_payment_status
 ) VALUES
 (5, '2025-01-15T00:00:00', '2025-01-15T00:00:00', 2000.00, 250.00, 250.00, 2000.00, 2250.00, 'NOT_AVAILABLE');
+
 
 ALTER TABLE customer ALTER COLUMN id RESTART WITH 6;
 ALTER TABLE loan_application ALTER COLUMN id RESTART WITH 6;
