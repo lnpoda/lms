@@ -46,8 +46,6 @@ public class LmsApplication {
 				lmsUser.setRole(userRole);
 				LMSUserRepository.save(lmsUser);
 
-
-
 				LMSUser admin = new LMSUser();
 				admin.setEmail("loanadmin@email.com");
 				admin.setPassword("{noop}54321");

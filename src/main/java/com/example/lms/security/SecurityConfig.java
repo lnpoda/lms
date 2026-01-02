@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .requestMatchers("/loan/**").hasAnyRole("APPLICANT", "ADMIN")
                 .requestMatchers("/loanApplication/**").hasRole("ADMIN")
                 .requestMatchers("/reports/**").hasRole("ADMIN")
+                .requestMatchers("/customer/create").hasRole("ADMIN")
                 .requestMatchers("/h2-console/**", "/error").permitAll());
         http.csrf(config->config.disable());
         http.cors(config->config.disable());
