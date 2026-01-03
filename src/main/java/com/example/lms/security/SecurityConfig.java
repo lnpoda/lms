@@ -2,6 +2,7 @@ package com.example.lms.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -13,17 +14,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(requests->requests.requestMatchers("/customer/**").hasAnyRole("APPLICANT", "ADMIN")
-                .requestMatchers("/loan/**").hasAnyRole("APPLICANT", "ADMIN")
+        http.authorizeHttpRequests(requests->requests.requestMatchers(HttpMethod.GET,"/customer/**").hasAnyRole("APPLICANT", "ADMIN")
+                .requestMatchers(HttpMethod.POST,"/customer/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/loan/**").hasAnyRole("APPLICANT", "ADMIN")
                 .requestMatchers("/loanApplication/**").hasRole("ADMIN")
                 .requestMatchers("/reports/**").hasRole("ADMIN")
                 .requestMatchers("/customer/create").hasRole("ADMIN")
-                .requestMatchers("/h2-console/**", "/error").permitAll());
+                .requestMatchers(HttpMethod.GET, "/h2-console/**", "/error").permitAll());
         http.csrf(config->config.disable());
         http.cors(config->config.disable());
 
         http.httpBasic(Customizer.withDefaults());
-        http.formLogin(Customizer.withDefaults());
+        http.formLogin(config->config.disable());
         http.headers(headers->headers.frameOptions(frame->frame.disable()));
         return http.build();
     }
