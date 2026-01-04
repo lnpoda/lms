@@ -1,5 +1,7 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.CustomerDto;
+import com.example.lms.entity.Customer;
 import com.example.lms.repository.CustomerRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CustomerControllerTest {
 
@@ -37,7 +41,7 @@ public class CustomerControllerTest {
 
         ResponseEntity<HttpStatus> response = testRestTemplate.postForEntity("/customer/create", request, HttpStatus.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.CREATED.value());
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
         Assertions.assertNotNull(customerRepository.findByMobileNumber(customerJson.get("mobileNumber").toString()));
     }
 
@@ -53,8 +57,29 @@ public class CustomerControllerTest {
         HttpEntity<String> request = new HttpEntity<>(customerJson.toString(), headers);
         ResponseEntity<HttpStatus> response = testRestTemplate.postForEntity("/customer/create", request, HttpStatus.class);
 
-        Assertions.assertEquals(response.getStatusCode().value(), HttpStatus.FORBIDDEN.value());
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode().value());
         Assertions.assertTrue(customerRepository.findByMobileNumber(customerJson.get("mobileNumber").toString()).isEmpty());
+    }
+
+    @Test
+    public void testListCustomer() {
+
+        ResponseEntity<CustomerDto[]> response1 = testRestTemplate.withBasicAuth("loanadmin@email.com", "54321")
+                .getForEntity("/customer/list", CustomerDto[].class);
+
+        Customer customer1 = new Customer();
+        customerRepository.save(customer1);
+
+        Customer customer2 = new Customer();
+        customerRepository.save(customer2);
+
+        ResponseEntity<CustomerDto[]> response2 = testRestTemplate.withBasicAuth("loanadmin@email.com", "54321")
+                .getForEntity("/customer/list", CustomerDto[].class);
+
+        Assertions.assertEquals(HttpStatus.OK.value(), response2.getStatusCode().value());
+        Assertions.assertNotNull(response2.getBody());
+        Assertions.assertNotNull(response1.getBody());
+        Assertions.assertEquals(2,  response2.getBody().length - response1.getBody().length);
     }
 
     private JSONObject getCustomerJson() throws JSONException {
