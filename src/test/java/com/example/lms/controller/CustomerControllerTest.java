@@ -6,7 +6,6 @@ import com.example.lms.repository.CustomerRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,7 +61,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testListCustomer() {
+    public void testListCustomer_gives200() {
 
         ResponseEntity<CustomerDto[]> response1 = testRestTemplate.withBasicAuth("loanadmin@email.com", "54321")
                 .getForEntity("/customer/list", CustomerDto[].class);
@@ -80,6 +79,20 @@ public class CustomerControllerTest {
         Assertions.assertNotNull(response2.getBody());
         Assertions.assertNotNull(response1.getBody());
         Assertions.assertEquals(2,  response2.getBody().length - response1.getBody().length);
+    }
+
+    @Test
+    public void testGetCustomer_withValidMobileNumber_gives200() {
+
+
+        Customer customer = new Customer();
+        customer.setMobileNumber("9999");
+        customerRepository.save(customer);
+        ResponseEntity<CustomerDto> response = testRestTemplate.withBasicAuth("loanadmin@email.com", "54321")
+                .getForEntity("/customer/get?mobileNumber=9999", CustomerDto.class);
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals("9999", response.getBody().getMobileNumber());
     }
 
     private JSONObject getCustomerJson() throws JSONException {
