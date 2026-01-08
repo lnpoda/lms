@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -21,7 +22,7 @@ import java.util.Set;
 public class LmsApplication {
 
 	@Autowired
-	public LMSUserRepository LMSUserRepository;
+	public LMSUserRepository lmsUserRepository;
 
 	@Autowired
 	public RoleRepository roleRepository;
@@ -30,10 +31,12 @@ public class LmsApplication {
 		SpringApplication.run(LmsApplication.class, args);
 	}
 
+
+	@Profile("!test")
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
-			if (LMSUserRepository.count() == 0) {
+			if (lmsUserRepository.count() == 0) {
 				LMSUser lmsUser = new LMSUser();
 				lmsUser.setEmail("loanuser@email.com");
 				lmsUser.setPassword("{noop}12345");
@@ -44,7 +47,7 @@ public class LmsApplication {
 				roleRepository.save(userRole);
 
 				lmsUser.setRole(userRole);
-				LMSUserRepository.save(lmsUser);
+				lmsUserRepository.save(lmsUser);
 
 				LMSUser admin = new LMSUser();
 				admin.setEmail("loanadmin@email.com");
@@ -56,7 +59,7 @@ public class LmsApplication {
 				roleRepository.save(adminRole);
 
 				admin.setRole(adminRole);
-				LMSUserRepository.save(admin);
+				lmsUserRepository.save(admin);
 
 			}
 		};
