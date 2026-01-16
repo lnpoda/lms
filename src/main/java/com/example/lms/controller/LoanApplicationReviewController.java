@@ -31,13 +31,13 @@ public class LoanApplicationReviewController {
     @PostMapping("{applicationReferenceCode}/approve")
     public ResponseEntity<String> approveLoanApplication(@PathVariable String applicationReferenceCode) {
         String loanReferenceCode = loanApplicationReviewService.approveLoanApplication(applicationReferenceCode);
-        return new ResponseEntity<>(loanReferenceCode, HttpStatus.CREATED); //TODO: make ResponseEntity carry ResponseDto
+        return new ResponseEntity<>(loanReferenceCode, HttpStatus.CREATED);
     }
 
     @PostMapping("{applicationReferenceCode}/reject")
     public ResponseEntity<HttpStatus> rejectLoanApplication(@PathVariable String applicationReferenceCode) {
         loanApplicationReviewService.rejectLoanApplication(applicationReferenceCode);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT); //TODO: make ResponseEntity carry ResponseDto
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

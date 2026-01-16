@@ -18,6 +18,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/customer/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/loan/**").hasAnyRole("APPLICANT", "ADMIN")
                 .requestMatchers("/loanApplication/**").hasRole("ADMIN")
+                .requestMatchers("/loanReview/**").hasRole("ADMIN")
                 .requestMatchers("/reports/**").hasRole("ADMIN")
                 .requestMatchers("/customer/create").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/h2-console/**", "/error").permitAll());
