@@ -1,30 +1,35 @@
 package com.example.lms.controller;
 
 import com.example.lms.constants.LoanApplicationStatus;
+import com.example.lms.dto.LoanApplicationResponseDto;
 import com.example.lms.dto.LoanApplicationReviewDto;
 import com.example.lms.entity.Customer;
 import com.example.lms.entity.LMSUser;
 import com.example.lms.entity.LoanApplication;
 import com.example.lms.entity.Role;
-import com.example.lms.repository.CustomerRepository;
-import com.example.lms.repository.LMSUserRepository;
-import com.example.lms.repository.LoanApplicationRepository;
-import com.example.lms.repository.RoleRepository;
+import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.repository.*;
+import com.example.lms.service.NotificationService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-test.yaml")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class LoanApplicationReviewControllerTest {
 
     @Autowired
@@ -43,6 +48,15 @@ public class LoanApplicationReviewControllerTest {
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private LoanRepository loanRepository;
+
+    @Autowired
+    private RepaymentScheduleRepository repaymentScheduleRepository;
+
+    @MockitoBean
+    private NotificationService notificationService;
 
     @BeforeEach
     public void setUp() {lmsUserRepository.deleteAll();
@@ -126,5 +140,117 @@ public class LoanApplicationReviewControllerTest {
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(2, response.getBody().length);
 
+    }
+
+    @Test
+    public void testReviewLoanEligibility_withValidApplicationReferenceCode_gives200() {
+
+        Customer customer = customerRepository.findByMobileNumber("5551111")
+                .orElseGet(() -> {
+                    Customer c = new Customer();
+                    c.setName("Alice Johnson");
+                    c.setEmail("alice@example.com");
+                    c.setMobileNumber("5551111");
+                    return customerRepository.save(c);
+                });
+
+        LoanApplication pending1 = new LoanApplication();
+        pending1.setApplicationReferenceCode("APP-PENDING-001");
+        pending1.setPrincipal(BigDecimal.valueOf(3000));
+        pending1.setTermMonths(12);
+        pending1.setPurpose("Education Loan");
+        pending1.setCustomerAnnualIncome(BigDecimal.valueOf(40000));
+        pending1.setLoanApplicationStatus(LoanApplicationStatus.SUBMITTED);
+        pending1.setCreatedAt(LocalDateTime.now());
+        pending1.setUpdatedAt(LocalDateTime.now());
+        pending1.setCustomer(customer);
+        loanApplicationRepository.save(pending1);
+
+        ResponseEntity<Boolean> response = adminRestTemplate.getForEntity("/loanReview/{applicationReferenceCode}/eligibility",
+                Boolean.class, Map.of("applicationReferenceCode","APP-PENDING-001"));
+
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertTrue(response.getBody());
+    }
+
+    @Test
+    public void testApproveLoanApplication_withValidApplicationReferenceCode_gives201() throws JSONException {
+
+        JSONObject json = new JSONObject("""
+    {
+      "principal": 3000,
+      "termMonths": 12,
+      "purpose": "Education Loan",
+      "customerAnnualIncome": 40000,
+      "customerDto": {
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "mobileNumber": "5551111"
+      }
+    }
+    """);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(json.toString(), headers);
+
+        // Submit the loan application
+        ResponseEntity<LoanApplicationResponseDto> submitResponse =
+                adminRestTemplate.postForEntity("/loanApplication/submit", request, LoanApplicationResponseDto.class);
+
+        String applicationReferenceCode = submitResponse.getBody().getApplicationReferenceCode();
+
+
+
+        ResponseEntity<String> response = adminRestTemplate.postForEntity("/loanReview/{applicationReferenceCode}/approve",
+                null,
+                String.class,
+                Map.of("applicationReferenceCode",applicationReferenceCode));
+
+        LoanApplication approvedLoanApplication = loanApplicationRepository.findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loanApplication", "applicationReferenceCode", applicationReferenceCode));
+        Assertions.assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
+        Assertions.assertEquals(LoanApplicationStatus.APPROVED, approvedLoanApplication.getLoanApplicationStatus());
+    }
+
+    @Test
+    public void testRejectLoanApplication_withValidApplicationReferenceCode_gives201() throws JSONException {
+
+        JSONObject json = new JSONObject("""
+    {
+      "principal": 3000,
+      "termMonths": 12,
+      "purpose": "Education Loan",
+      "customerAnnualIncome": 40000,
+      "customerDto": {
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "mobileNumber": "5551111"
+      }
+    }
+    """);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(json.toString(), headers);
+
+        // Submit the loan application
+        ResponseEntity<LoanApplicationResponseDto> submitResponse =
+                adminRestTemplate.postForEntity("/loanApplication/submit", request, LoanApplicationResponseDto.class);
+
+        String applicationReferenceCode = submitResponse.getBody().getApplicationReferenceCode();
+
+        ResponseEntity<String> response = adminRestTemplate.postForEntity("/loanReview/{applicationReferenceCode}/reject",
+                null,
+                String.class,
+                Map.of("applicationReferenceCode",applicationReferenceCode));
+
+        LoanApplication approvedLoanApplication = loanApplicationRepository.findByApplicationReferenceCode(applicationReferenceCode)
+                .orElseThrow(()->new ResourceNotFoundException("loanApplication", "applicationReferenceCode", applicationReferenceCode));
+        Assertions.assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
+        Assertions.assertEquals(LoanApplicationStatus.REJECTED, approvedLoanApplication.getLoanApplicationStatus());
     }
 }
