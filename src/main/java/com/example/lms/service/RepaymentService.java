@@ -115,6 +115,18 @@ public class RepaymentService {
 
         updateLastRepaymentScheduleEntry(loan.getRepaymentSchedule(), repaymentAmount);
         log.info("repayment of {} being performed for loan {}", loanRepaymentDto.getRepaymentAmount(), loanRepaymentDto.getLoanReferenceCode());
+
+        boolean fullyPaid = loan.getRepaymentSchedule()
+                .getRepaymentSchedule()
+                .values()
+                .stream()
+                .allMatch(e -> e.getLoanPaymentStatus() == LoanPaymentStatus.PAID);
+
+        if (fullyPaid) {
+            loan.setLoanPaymentStatus(LoanPaymentStatus.PAID);
+        }
+
+        loanRepository.save(loan);
         return loanReferenceCode;
     }
 

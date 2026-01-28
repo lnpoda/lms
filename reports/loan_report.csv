@@ -1,1 +1,1 @@
-Category, LoanReferenceCode, Principal, PaymentStatusactiveLoans,LN-10001,5000.00,PENDINGoverdueLoans,LN-10002,7500.00,OVERDUE
+Category, LoanReferenceCode, Principal, PaymentStatusactiveLoans,LOAN-ACTIVE-001,3000.00,PENDINGoverdueLoans,LOAN-OVERDUE-001,5000.00,OVERDUE

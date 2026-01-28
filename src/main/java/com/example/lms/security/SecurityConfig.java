@@ -16,12 +16,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests->requests.requestMatchers(HttpMethod.GET,"/customer/**").hasAnyRole("APPLICANT", "ADMIN")
                 .requestMatchers(HttpMethod.POST,"/customer/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/loan/**").hasAnyRole("APPLICANT", "ADMIN")
+//                .requestMatchers(HttpMethod.POST,"/loan/**").hasRole("ADMIN")
+//                .requestMatchers(HttpMethod.GET, "/loan/**").hasAnyRole("APPLICANT", "ADMIN")
+                .requestMatchers("/loan/**").permitAll()
                 .requestMatchers("/loanApplication/**").hasRole("ADMIN")
                 .requestMatchers("/loanReview/**").hasRole("ADMIN")
                 .requestMatchers("/reports/**").hasRole("ADMIN")
                 .requestMatchers("/customer/create").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/h2-console/**", "/error").permitAll());
+                .requestMatchers(HttpMethod.GET, "/h2-console/**", "/error").permitAll()
+                .anyRequest().authenticated());
         http.csrf(config->config.disable());
         http.cors(config->config.disable());
 

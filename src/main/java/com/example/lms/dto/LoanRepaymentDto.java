@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Getter @Setter
 public class LoanRepaymentDto {
 
-    private String LoanReferenceCode;
+    private String loanReferenceCode;
 
     private BigDecimal repaymentAmount;
 }

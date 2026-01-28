@@ -14,7 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("loan")
+@RequestMapping("/loan")
 public class LoanController {
 
     private final RepaymentService repaymentService;

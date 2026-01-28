@@ -59,7 +59,8 @@ public class LoanApplicationReviewControllerTest {
     private NotificationService notificationService;
 
     @BeforeEach
-    public void setUp() {lmsUserRepository.deleteAll();
+    public void setUp() {
+        lmsUserRepository.deleteAll();
         roleRepository.deleteAll();
 
         LMSUser lmsUser = new LMSUser();
@@ -88,7 +89,7 @@ public class LoanApplicationReviewControllerTest {
 
         Customer c = new Customer();
         c.setName("Alice Johnson");
-        c.setEmail("bijan85426@icousd.com");
+        c.setEmail("alice@example.com");
         c.setMobileNumber("5551111");
         customerRepository.save(c);
 
@@ -102,7 +103,7 @@ public class LoanApplicationReviewControllerTest {
                 .orElseGet(() -> {
                     Customer c = new Customer();
                     c.setName("Alice Johnson");
-                    c.setEmail("bijan85426@icousd.com");
+                    c.setEmail("alice@example.com");
                     c.setMobileNumber("5551111");
                     return customerRepository.save(c);
                 });

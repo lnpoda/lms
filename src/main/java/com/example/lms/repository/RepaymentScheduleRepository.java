@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface RepaymentScheduleRepository extends CrudRepository<RepaymentSchedule, Long> {
 
     Optional<RepaymentSchedule> findByLoanLoanApplicationApplicationReferenceCode(String applicationReferenceCode);
+
+    Optional<RepaymentSchedule> findByLoanLoanReferenceCode(String loanReferenceCode);
 }
